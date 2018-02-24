@@ -1,0 +1,28 @@
+{
+  "name": "Cidadao",
+  "plural": "cidadaos",
+  "forceId": false,
+  "remoting" : {
+    "normalizeHttpPath" : true
+  },
+  "properties": {
+    "cpf": {
+      "type": "number",
+      "required": true,
+      "id": true
+    },
+    "senha": {
+      "type": "string",
+      "required": true
+    },
+    "nome": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+     },
+    "telefone": {
+      "type": "string"
+    }
+  }
+}

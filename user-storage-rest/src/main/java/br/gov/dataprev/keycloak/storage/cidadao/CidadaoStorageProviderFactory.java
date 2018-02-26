@@ -14,30 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.keycloak.examples.storage.user;
+package br.gov.dataprev.keycloak.storage.cidadao;
+
+import javax.naming.InitialContext;
 
 import org.jboss.logging.Logger;
+import org.keycloak.Config;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.storage.UserStorageProviderFactory;
-
-import javax.naming.InitialContext;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class EjbExampleUserStorageProviderFactory implements UserStorageProviderFactory<CidadaoUserStorageProvider> {
-    private static final Logger logger = Logger.getLogger(EjbExampleUserStorageProviderFactory.class);
-
+public class CidadaoStorageProviderFactory implements UserStorageProviderFactory<CidadaoStorageProvider> {
+    private static final Logger logger = Logger.getLogger(CidadaoStorageProviderFactory.class);
+    
+    private CidadaoIdentityStoreRegistry restStoreRegistry;
 
     @Override
-    public CidadaoUserStorageProvider create(KeycloakSession session, ComponentModel model) {
-        try {
+    public CidadaoStorageProvider create(KeycloakSession session, ComponentModel model) {
+    	try {
             InitialContext ctx = new InitialContext();
-            CidadaoUserStorageProvider provider = (CidadaoUserStorageProvider)ctx.lookup("java:global/user-storage-jpa-example/" + CidadaoUserStorageProvider.class.getSimpleName());
+            CidadaoStorageProvider provider = (CidadaoStorageProvider)ctx.lookup("java:global/user-storage-rest/" + CidadaoStorageProvider.class.getSimpleName());
             provider.setModel(model);
             provider.setSession(session);
+            provider.setIdentityStore(this.restStoreRegistry.getRestStore(session, model));
             return provider;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -46,17 +49,23 @@ public class EjbExampleUserStorageProviderFactory implements UserStorageProvider
 
     @Override
     public String getId() {
-        return "example-user-storage-jpa";
+        return "Cidadão Storage Provider";
     }
 
     @Override
     public String getHelpText() {
-        return "JPA Example User Storage Provider";
+        return "Provider de usuários integrados a base de dados do SIAC";
+    }
+    
+    @Override
+    public void init(Config.Scope config) {
+        this.restStoreRegistry = new CidadaoIdentityStoreRegistry();
     }
 
     @Override
     public void close() {
         logger.info("<<<<<< Closing factory");
+        this.restStoreRegistry = null;
 
     }
 }

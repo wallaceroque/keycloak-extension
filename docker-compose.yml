@@ -18,6 +18,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_PORT_5432_TCP_ADDR: postgres
       POSTGRES_PORT_5432_TCP_PORT: 5432
+      SIAC_CONNECTION_URL: http://192.168.2.3:3000/api
     ports:
       - "8080:8080"
       - "9990:9990"

@@ -14,7 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.keycloak.examples.storage.user;
+package br.gov.dataprev.keycloak.storage.cidadao;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.jboss.logging.Logger;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -24,27 +28,24 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     private static final Logger logger = Logger.getLogger(UserAdapter.class);
-    protected UserEntity entity;
+    protected Cidadao entity;
     protected String keycloakId;
 
-    public UserAdapter(KeycloakSession session, RealmModel realm, ComponentModel model, UserEntity entity) {
+    public UserAdapter(KeycloakSession session, RealmModel realm, ComponentModel model, Cidadao entity) {
         super(session, realm, model);
         this.entity = entity;
-        keycloakId = StorageId.keycloakId(model, entity.getId());
+        keycloakId = StorageId.keycloakId(model, String.valueOf(entity.getCpf()));
     }
 
     public String getPassword() {
-        return entity.getSenha();
+    	return null;
+        //return entity.getSenha();
     }
 
     public void setPassword(String password) {
@@ -79,7 +80,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public void setSingleAttribute(String name, String value) {
-        if (name.equals("phone")) {
+        if (name.equals("telefone")) {
             entity.setTelefone(value);
         } else {
             super.setSingleAttribute(name, value);
@@ -88,7 +89,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public void removeAttribute(String name) {
-        if (name.equals("phone")) {
+        if (name.equals("telefone")) {
             entity.setTelefone(null);
         } else {
             super.removeAttribute(name);
@@ -97,7 +98,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public void setAttribute(String name, List<String> values) {
-        if (name.equals("phone")) {
+        if (name.equals("telefone")) {
             entity.setTelefone(values.get(0));
         } else {
             super.setAttribute(name, values);
@@ -106,7 +107,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public String getFirstAttribute(String name) {
-        if (name.equals("phone")) {
+        if (name.equals("telefone")) {
             return entity.getTelefone();
         } else {
             return super.getFirstAttribute(name);
@@ -118,13 +119,13 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
         Map<String, List<String>> attrs = super.getAttributes();
         MultivaluedHashMap<String, String> all = new MultivaluedHashMap<>();
         all.putAll(attrs);
-        all.add("phone", entity.getTelefone());
+        all.add("telefone", entity.getTelefone());
         return all;
     }
 
     @Override
     public List<String> getAttribute(String name) {
-        if (name.equals("phone")) {
+        if (name.equals("telefone")) {
             List<String> phone = new LinkedList<>();
             phone.add(entity.getTelefone());
             return phone;

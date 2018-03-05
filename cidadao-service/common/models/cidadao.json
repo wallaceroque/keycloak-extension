@@ -23,6 +23,9 @@
      },
     "telefone": {
       "type": "string"
+    },
+    "isPrimeiroLogin": {
+      "type": "boolean"
     }
   }
 }

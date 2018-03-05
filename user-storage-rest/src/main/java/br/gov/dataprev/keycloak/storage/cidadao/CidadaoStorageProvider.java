@@ -3,12 +3,8 @@ package br.gov.dataprev.keycloak.storage.cidadao;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.ejb.Local;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
 
 import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
@@ -16,33 +12,33 @@ import org.keycloak.credential.CredentialInput;
 import org.keycloak.credential.CredentialInputUpdater;
 import org.keycloak.credential.CredentialInputValidator;
 import org.keycloak.credential.CredentialModel;
+import org.keycloak.models.FederatedIdentityModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ModelException;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.models.UserModel.RequiredAction;
 import org.keycloak.models.cache.CachedUserModel;
 import org.keycloak.models.credential.PasswordUserCredentialModel;
+import org.keycloak.models.utils.UserModelDelegate;
 import org.keycloak.policy.PasswordPolicyManagerProvider;
 import org.keycloak.policy.PolicyError;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
+import org.keycloak.storage.federated.UserFederatedStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Stateful
-@Local(CidadaoStorageProvider.class)
 public class CidadaoStorageProvider implements 
 		UserStorageProvider,
 		UserLookupProvider,
 		CredentialInputValidator,
 		CredentialInputUpdater
 		//UserQueryProvider,
-		//CredentialInputUpdater,
-//		CredentialInputValidator,
 //		CredentialAuthentication,
 //		ImportedUserValidation
         // OnUserCache
@@ -63,21 +59,15 @@ public class CidadaoStorageProvider implements
     
     protected final Set<String> supportedCredentialTypes = new HashSet<>();
     
-    /*public CidadaoStorageProvider(CidadaoStorageProviderFactory factory, KeycloakSession session, ComponentModel model, CidadaoIdentityStore identityStore) {
+    public CidadaoStorageProvider(CidadaoStorageProviderFactory factory, KeycloakSession session, ComponentModel model, CidadaoIdentityStore identityStore) {
     	logger.debug("provider: constructor");
         this.factory = factory;
         this.session = session;
+        this.model = model;
         this.identityStore = identityStore;
         //this.mapperManager = new LDAPStorageMapperManager(this);
         this.userManager = new CidadaoStorageUserManager(this);
 
-        supportedCredentialTypes.add(UserCredentialModel.PASSWORD);
-    }*/
-    
-    @PostConstruct
-    public void init() {
-    	logger.info("provider: init");
-        this.userManager = new CidadaoStorageUserManager(this);
         supportedCredentialTypes.add(UserCredentialModel.PASSWORD);
     }
 
@@ -91,7 +81,6 @@ public class CidadaoStorageProvider implements
     
     //// UserStorageProvider
     
-    @Remove
     @Override
 	public void close() {
 		// TODO Auto-generated method stub	
@@ -115,19 +104,54 @@ public class CidadaoStorageProvider implements
     @Override
 	public UserModel getUserByUsername(String cpf, RealmModel realm) {
     	logger.info("getUserByUsername: cpf: " + cpf);
-    	Cidadao cidadao = identityStore.searchById(Long.valueOf(cpf));
+    	logger.info("getUserByUsername: count local storage: " + session.userLocalStorage().getUsersCount(realm));
+    	logger.info("getUserByUsername: count federated storage: " + session.userFederatedStorage().getStoredUsersCount(realm));
+    	Set<FederatedIdentityModel> models = session.userFederatedStorage().getFederatedIdentities(new StorageId(cpf).getId(), realm);
+    	logger.info("getUserByUsername: count federated identity model stored: " + models.size());
     	
-         if (cidadao == null) {
-             return null;
-         }
-         
-         UserAdapter adapter = new UserAdapter(session, realm, model, cidadao);
-         
-         //userManager.setManagedProxiedUser(adapter, cidadao);
+    	try{
+    		List<UserModel> users = session.userLocalStorage().getUsers(realm);
+            users.forEach(user -> 
+            	logger.info("getUserByUsername: user from local storage: id: " + 
+            			user.getId() + " username: " + user.getUsername()));
+            
+            List<String> federatedStoredUsers = session.userFederatedStorage().getStoredUsers(realm, 0, 5);
+            
+            federatedStoredUsers.forEach(user -> {
+            	logger.info("getUserByUsername: user from federated storage: " + user);
+	            session.userFederatedStorage()
+	        		.getRequiredActions(realm, new StorageId(cpf).getId())
+	        		.forEach(requiredAction -> 
+	        			logger.info("getUserByUsername: required action from federated storage: " + requiredAction));
+	            });
+            
+            ///////////////////////////////////////////////////////////
+            
+            Cidadao cidadao = identityStore.searchById(Long.valueOf(cpf));
+            if (cidadao == null) {
+                return null;
+            }
+            
+            //UserModel userModel = session.userLocalStorage().getUserByUsername(cpf, realm);
+            
+            UserAdapter userAdapter = new UserAdapter(session, realm, model, cidadao);
+            
+            if (userAdapter.isEnabled()) {
+            	logger.info("getUserByUsername: keycloakId:" + userAdapter.getId());
+            	//session.userLocalStorage().addUser(realm, cpf);
+            	if (cidadao.isPrimeiroLogin()) userAdapter.addRequiredAction(RequiredAction.UPDATE_PASSWORD);
+            }
+            
+            //userManager.setManagedProxiedUser(adapter, cidadao);
 
-         return adapter;
-
-         //return new UserAdapter(session, realm, model, cidadao);
+            return userAdapter;
+    		
+    	} catch(ModelException re) {
+    		logger.error("Um erro aconteceu e nada será feito: " + re.getMessage());
+    		throw new RuntimeException("Lançada uma exceção", re);
+    		//return null;
+    	}
+    	
 	}
     
     @Override
@@ -162,11 +186,14 @@ public class CidadaoStorageProvider implements
 		logger.info("isValid: UserModel.getId() -> " + user.getId());
         //UserAdapter adapter = (UserAdapter)getUserByUsername(StorageId.externalId(user.getId()), realm);
 		Cidadao cidadao = identityStore.searchById(Long.valueOf((StorageId.externalId(user.getId()))));
+
         //String password = getPassword(adapter);
 		String password = cidadao.getSenha();
         UserCredentialModel cred = (UserCredentialModel)input;
+        PolicyError error = session.getProvider(PasswordPolicyManagerProvider.class).validate(realm, user, password);
         logger.info("isValid: input -> " + cred.getValue() + " user password -> " + password);
-        return password != null && password.equals(cred.getValue());
+        logger.info("isValid: error: " + error);
+        return password != null && password.equals(cred.getValue()) && error == null;
 	}
 
 	@Override
@@ -203,6 +230,7 @@ public class CidadaoStorageProvider implements
         try {
         	Cidadao cidadao = identityStore.searchById(Long.valueOf((StorageId.externalId(user.getId()))));
 	        cidadao.setSenha(password);
+	        cidadao.setPrimeiroLogin(false);
 	        
 	        identityStore.update(cidadao);
 	
@@ -242,9 +270,6 @@ public class CidadaoStorageProvider implements
     }
     
     public void setIdentityStore(CidadaoIdentityStore restStore) {
-    	CidadaoService service = restStore.getServiceTarget().proxy(CidadaoService.class);
-    	restStore.setService(service);
-    	
     	this.identityStore = restStore;
     }
 

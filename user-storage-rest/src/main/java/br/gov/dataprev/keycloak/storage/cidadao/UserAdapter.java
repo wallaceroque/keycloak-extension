@@ -25,6 +25,7 @@ import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
+import org.keycloak.storage.ReadOnlyException;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 
@@ -44,8 +45,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     }
 
     public String getPassword() {
-    	return null;
-        //return entity.getSenha();
+        return entity.getSenha();
     }
 
     public void setPassword(String password) {
@@ -54,13 +54,12 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public String getUsername() {
-        return entity.getNome();
+        return entity.getCpf().toString();
     }
 
     @Override
     public void setUsername(String username) {
-        entity.setNome(username);
-
+        throw new ReadOnlyException("O CPF não pode ser alterado.");
     }
 
     @Override

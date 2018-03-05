@@ -19,8 +19,6 @@ package br.gov.dataprev.keycloak.storage.cidadao;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.naming.InitialContext;
-
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.component.ComponentModel;
@@ -41,19 +39,13 @@ public class CidadaoStorageProviderFactory implements
     private static final Logger logger = Logger.getLogger(CidadaoStorageProviderFactory.class);
     
     private CidadaoIdentityStoreRegistry restStoreRegistry;
-
-	private String apiConnectionUrl = "";
+    RESTIdentityStore<Cidadao>identityStore;
 
     @Override
     public CidadaoStorageProvider create(KeycloakSession session, ComponentModel model) {
     	try {
-            InitialContext ctx = new InitialContext();
-            CidadaoStorageProvider provider = (CidadaoStorageProvider)ctx.lookup("java:global/user-storage-rest/" + CidadaoStorageProvider.class.getSimpleName());
-            provider.setModel(model);
-            provider.setSession(session);
-            RESTIdentityStore <Cidadao>identityStore = this.restStoreRegistry.getRestStore(session, model);
-            provider.setIdentityStore((CidadaoIdentityStore) identityStore);
-            this.apiConnectionUrl  = identityStore.getConfig().getConnectionUrl();
+    		this.identityStore = this.restStoreRegistry.getRestStore(session, model);
+            CidadaoStorageProvider provider = new CidadaoStorageProvider(this, session, model, (CidadaoIdentityStore)this.identityStore);
             return provider;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -64,7 +56,7 @@ public class CidadaoStorageProviderFactory implements
     public Map<String, String> getOperationalInfo() {
         Map<String, String> info = new LinkedHashMap<>();
         info.put("Versão", "1.0.0-SNAPSHOT");
-        info.put("Endereço da API REST", this.apiConnectionUrl + "");
+        //info.put("Endereço da API REST", identityStore.getConfig().getConnectionUrl() + "");
         return info;
     }
 

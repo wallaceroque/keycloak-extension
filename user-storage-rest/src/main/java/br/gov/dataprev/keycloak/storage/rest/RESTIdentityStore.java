@@ -3,7 +3,6 @@ package br.gov.dataprev.keycloak.storage.rest;
 import javax.naming.AuthenticationException;
 
 import br.gov.dataprev.keycloak.storage.cidadao.Cidadao;
-import br.gov.dataprev.keycloak.storage.cidadao.CidadaoService;
 import br.gov.dataprev.keycloak.storage.rest.model.Entity;
 
 public interface RESTIdentityStore<T extends Entity> {
@@ -14,12 +13,6 @@ public interface RESTIdentityStore<T extends Entity> {
      * @return
      */
     RESTConfig getConfig();
-    
-    /**
-     * Insere a instância do serviço REST
-     * @param service
-     */
-    void setService(CidadaoService service);
     
     /**
      * 

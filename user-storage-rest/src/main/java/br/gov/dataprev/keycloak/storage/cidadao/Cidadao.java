@@ -5,8 +5,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-
 import br.gov.dataprev.keycloak.storage.rest.model.Entity;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -19,6 +17,7 @@ public class Cidadao implements Entity {
     private String email;
     private String senha;
     private String telefone;
+    private boolean isPrimeiroLogin;
 
     public Long getCpf() {
         return cpf;
@@ -60,6 +59,14 @@ public class Cidadao implements Entity {
         this.telefone = telefone;
     }
     
+    public boolean isPrimeiroLogin() {
+    	return this.isPrimeiroLogin;
+    }
+    
+    public void setPrimeiroLogin(boolean isPrimeiroLogin) {
+    	this.isPrimeiroLogin = isPrimeiroLogin;
+    }
+    
     @Override
     public String toString() {
     	return "{"
@@ -68,6 +75,7 @@ public class Cidadao implements Entity {
     			+ "\"nome\":" + getNome()
     			+ "\"email\":" + getEmail()
     			+ "\"telefone\":" + getTelefone()
+    			+ "\"isPrimeiroLogin\":" + isPrimeiroLogin()
     			+ "}";
     }
 }

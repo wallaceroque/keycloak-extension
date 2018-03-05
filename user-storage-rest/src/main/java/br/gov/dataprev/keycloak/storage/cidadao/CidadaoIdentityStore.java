@@ -1,17 +1,17 @@
 package br.gov.dataprev.keycloak.storage.cidadao;
 
-import java.util.Map;
-
 import javax.naming.AuthenticationException;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.keycloak.models.ModelException;
 
 import br.gov.dataprev.keycloak.storage.rest.RESTConfig;
@@ -22,16 +22,15 @@ public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
 	private static final Logger logger = Logger.getLogger(CidadaoIdentityStore.class);
 	
 	private RESTConfig config;
-	private ResteasyWebTarget serviceTarget;
-	private CidadaoService service;
+	private WebTarget api;
 	
 	public CidadaoIdentityStore(RESTConfig config) {
         this.config = config;
         
         logger.info("SIAC_CONNECTION_URL " + config.getConnectionUrl());
         
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        this.setServiceTarget(client.target(UriBuilder.fromPath(config.getConnectionUrl())));
+        Client client = ClientBuilder.newClient();
+        this.api = client.target(UriBuilder.fromPath(config.getConnectionUrl()));
     }
 
 	@Override
@@ -40,32 +39,32 @@ public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
 	}
 	
 	@Override
-	public void setService(CidadaoService service) {
-		this.service = service;
-	}
-	
-	@Override
 	public Cidadao searchById(Long cpf) {
 		Cidadao cidadao = null;
 		Response response = null;
 		try {
-			response = (ClientResponse)service.getByCpf(cpf);
+			response = this.api.path("cidadaos/{cpf}")
+					.resolveTemplate("cpf", cpf.toString())
+					.request(MediaType.APPLICATION_JSON)
+					.get();
+			
+			if (response == null) {
+				throw new RuntimeException("Ocorre um problema ao processar a requisição");
+			}
 			
 			if (response.getStatus() == 404) {
-				throw new NotFoundException("Não foi possível consultar pelo CPF: ");
+				throw new NotFoundException("Não foi possível consultar pelo CPF: " + cpf);
 			}
 			
 			if (response.getStatus() == 200) {
 				cidadao = response.readEntity(Cidadao.class);
 			}
 			
-		} catch (NotFoundException e) {
-			logger.info("Não foi possível encontrar o CPF: " + cpf);
-			
 		} catch (Exception e) {
 			throw new ModelException("Não foi possível encontrar o CPF: " + cpf, e);
+			//throw new RuntimeException(e);
 		} finally {
-			response.close();
+			if (response != null) response.close();
 		}
 		
 		return cidadao;
@@ -77,8 +76,11 @@ public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
 		
 		try {
 			
-			String filter = "filter[where][and][0][email][regexp]=/" + email + "/i";
-			response = (ClientResponse)service.getAll(filter);
+			// String filter = "?filter[where][and][0][email][regexp]=/" + email + "/i";
+			response = this.api.path("cidadaos")
+					.queryParam("filter[where][and][0][email][regexp]","/" + email + "/i")
+					.request(MediaType.APPLICATION_JSON)
+					.get();
 			
 			if (response.getStatus() == 404) {
 				throw new NotFoundException("Não foi possível consultar pelo CPF: ");
@@ -94,7 +96,7 @@ public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
 		} catch (Exception e) {
 			throw new ModelException("Não foi possível encontrar o usuário de email: " + email, e);
 		} finally {
-			response.close();
+			if (response != null) response.close();
 		}
 		
 		return cidadao;
@@ -111,10 +113,23 @@ public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
 
 	@Override
 	public void update(Cidadao entity) {
+		Response response = null;
+		
 		try {
-			service.updateParcialCidadao(entity.getCpf(), entity);
+			//service.updateParcialCidadao(entity.getCpf(), entity);
+			response = this.api.path("cidadaos/{cpf}")
+					.resolveTemplate("cpf", entity.getCpf().toString())
+					.request(MediaType.APPLICATION_JSON)
+					.build("PATCH", Entity.json(entity))
+					.invoke();
+			
+			if (response.getStatus() != 200) {
+				throw new BadRequestException(response);
+			}
 		} catch(Exception e) {
 			throw new ModelException("Não foi possível atualizar o usuário de CPF: " + entity.getCpf() , e);
+		} finally {
+			if (response != null) response.close();
 		}
 	}
 
@@ -122,14 +137,6 @@ public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
 	public void validatePassword(Cidadao entity, String senha) throws AuthenticationException {
 		// TODO Auto-generated method stub
 		
-	}
-
-	public ResteasyWebTarget getServiceTarget() {
-		return serviceTarget;
-	}
-
-	public void setServiceTarget(ResteasyWebTarget serviceTarget) {
-		this.serviceTarget = serviceTarget;
 	}
 
 }

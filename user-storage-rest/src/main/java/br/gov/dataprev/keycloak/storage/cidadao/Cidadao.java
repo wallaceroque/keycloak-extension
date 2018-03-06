@@ -5,10 +5,13 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import br.gov.dataprev.keycloak.storage.rest.model.Entity;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "cidadao", propOrder = { "cpf" })
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Cidadao implements Entity {
     
     private Long cpf;

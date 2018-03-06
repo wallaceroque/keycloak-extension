@@ -2,7 +2,6 @@ package br.gov.dataprev.keycloak.storage.rest;
 
 import javax.naming.AuthenticationException;
 
-import br.gov.dataprev.keycloak.storage.cidadao.Cidadao;
 import br.gov.dataprev.keycloak.storage.rest.model.Entity;
 
 public interface RESTIdentityStore<T extends Entity> {
@@ -10,16 +9,23 @@ public interface RESTIdentityStore<T extends Entity> {
 	/**
      * Retorna a configuração da instância do Identity Store baseado em REST
      *
-     * @return
+     * @return RESTConfig
      */
     RESTConfig getConfig();
     
     /**
      * 
      * @param id 
-     * @return Cidadao 
+     * @return Entity
      */
-    Cidadao searchById(Long id);
+    T searchById(Long id);
+    
+    /**
+     * 
+     * @param email
+     * @return Entity
+     */
+    T searchByEmail(String email);
 	
 	/**
      * Persiste uma entidade
@@ -50,7 +56,7 @@ public interface RESTIdentityStore<T extends Entity> {
      * @param restQuery
      * @return 
      */
-    //List<Entity> fetchQueryResults(RESTQuery restQuery);
+    //List<T> fetchQueryResults(RESTQuery restQuery);
     
     /**
      * Retorna a quantidade de registros encontrados a partir de uma consulta

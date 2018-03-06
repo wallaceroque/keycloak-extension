@@ -233,9 +233,12 @@ public class CidadaoStorageProvider implements
 	        cidadao.setPrimeiroLogin(false);
 	        
 	        identityStore.update(cidadao);
-	
+	        
+	        
+	        logger.info("updateCredential: Senha alterada com sucesso!" );	
 	        return true;
 	    } catch (ModelException me) {
+	    	logger.info("updateCredential: Falha ao alterar a senha: ", me);
 	    	throw me;
 	    }
 	}

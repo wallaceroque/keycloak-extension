@@ -1,19 +1,3 @@
-/*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates
- * and other contributors as indicated by the @author tags.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package br.gov.dataprev.keycloak.storage.cidadao;
 
 import java.util.LinkedList;
@@ -30,7 +14,16 @@ import org.keycloak.storage.StorageId;
 import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 
 /**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * TODO: Deve ser verificado se o Keycloak pode alterar o cpf e outros atributos do usuário ao utilizar this.entity.setCpf. 
+ * Caso seja possível esse método deve lançar a exceção ReadOnlyException. Três situações devem ser verificadas:
+ *    - Ao importar o usuário a primeira vez da base da Keycloak
+ *    - Ao criar um usuário pela tela de gerenciamento de usuários
+ *    - Na tela de gestão de contas do usuário
+ */
+
+/**
+ * Responsável por fazer o bind entre o objeto usuário do Keycloak e o objeto de domínio do negócio
+ * @author <a href="mailto:wallacerock@gmail.com">Wallace Roque</a>
  * @version $Revision: 1 $
  */
 public class UserAdapter extends AbstractUserAdapterFederatedStorage {
@@ -41,20 +34,21 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     public UserAdapter(KeycloakSession session, RealmModel realm, ComponentModel model, Cidadao entity) {
         super(session, realm, model);
         this.entity = entity;
-        keycloakId = StorageId.keycloakId(model, String.valueOf(entity.getCpf()));
+        logger.info("UserAdapter: entity: " + entity.toString());
+        this.keycloakId = StorageId.keycloakId(model, String.valueOf(this.entity.getCpf()));
     }
 
     public String getPassword() {
-        return entity.getSenha();
+    	return this.entity.getSenha();
     }
 
     public void setPassword(String password) {
-        entity.setSenha(password);
+        this.entity.setSenha(password);
     }
 
     @Override
     public String getUsername() {
-        return entity.getCpf().toString();
+        return this.entity.getCpf().toString();
     }
 
     @Override
@@ -64,23 +58,24 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public void setEmail(String email) {
-        entity.setEmail(email);
+    	logger.info("setEmail: " + email);
+        this.entity.setEmail(email);
     }
 
     @Override
     public String getEmail() {
-        return entity.getEmail();
+        return this.entity.getEmail();
     }
 
     @Override
     public String getId() {
-        return keycloakId;
+        return this.keycloakId;
     }
 
     @Override
     public void setSingleAttribute(String name, String value) {
         if (name.equals("telefone")) {
-            entity.setTelefone(value);
+            this.entity.setTelefone(value);
         } else {
             super.setSingleAttribute(name, value);
         }
@@ -89,7 +84,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     @Override
     public void removeAttribute(String name) {
         if (name.equals("telefone")) {
-            entity.setTelefone(null);
+            this.entity.setTelefone(null);
         } else {
             super.removeAttribute(name);
         }
@@ -98,7 +93,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     @Override
     public void setAttribute(String name, List<String> values) {
         if (name.equals("telefone")) {
-            entity.setTelefone(values.get(0));
+            this.entity.setTelefone(values.get(0));
         } else {
             super.setAttribute(name, values);
         }
@@ -107,7 +102,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     @Override
     public String getFirstAttribute(String name) {
         if (name.equals("telefone")) {
-            return entity.getTelefone();
+            return this.entity.getTelefone();
         } else {
             return super.getFirstAttribute(name);
         }
@@ -118,7 +113,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
         Map<String, List<String>> attrs = super.getAttributes();
         MultivaluedHashMap<String, String> all = new MultivaluedHashMap<>();
         all.putAll(attrs);
-        all.add("telefone", entity.getTelefone());
+        all.add("telefone", this.entity.getTelefone());
         return all;
     }
 
@@ -126,7 +121,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     public List<String> getAttribute(String name) {
         if (name.equals("telefone")) {
             List<String> phone = new LinkedList<>();
-            phone.add(entity.getTelefone());
+            phone.add(this.entity.getTelefone());
             return phone;
         } else {
             return super.getAttribute(name);

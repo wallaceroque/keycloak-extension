@@ -5,7 +5,7 @@
     "ACL": 1,
     "RoleMapping": 1,
     "Role": 1,
-    "Cidadao": 9446121730
+    "Cidadao": 333
   },
   "models": {
     "User": {},
@@ -14,8 +14,8 @@
     "RoleMapping": {},
     "Role": {},
     "Cidadao": {
-      "86225529349": "{\"cpf\":86225529349,\"senha\":\"321321\",\"nome\":\"Irleide Moraes dos Santos\",\"email\":\"irleide@gmail.com\",\"telefone\":\"(21)983375116\",\"isPrimeiroLogin\":false}",
-      "9446121728": "{\"cpf\":9446121728,\"senha\":\"123123\",\"nome\":\"Wallace Roque de Figueiredo\",\"email\":\"wallacerock@gmail.com\",\"telefone\":\"(21)969068767\",\"isPrimeiroLogin\":false}"
+      "111": "{\"cpf\":111,\"senha\":\"321321\",\"nome\":\"Irleide Moraes dos Santos\",\"email\":\"irleide@gmail.com\",\"telefone\":\"(21)983375116\",\"isPrimeiroLogin\":false}",
+      "222": "{\"cpf\":222,\"senha\":\"123123\",\"nome\":\"Wallace Roque de Figueiredo\",\"email\":\"wallacerock@gmail.com\",\"telefone\":\"(21)969068767\",\"isPrimeiroLogin\":false}"
     }
   }
 }

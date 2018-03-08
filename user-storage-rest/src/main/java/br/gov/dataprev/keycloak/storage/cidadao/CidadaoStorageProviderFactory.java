@@ -10,6 +10,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.provider.ServerInfoAwareProviderFactory;
 import org.keycloak.storage.UserStorageProviderFactory;
 
+import br.gov.dataprev.keycloak.storage.cidadao.model.Cidadao;
 import br.gov.dataprev.keycloak.storage.rest.RESTIdentityStore;
 
 /**

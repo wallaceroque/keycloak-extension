@@ -29,8 +29,11 @@ import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.storage.federated.UserFederatedStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
 
+import br.gov.dataprev.keycloak.storage.cidadao.model.Cidadao;
+import br.gov.dataprev.keycloak.storage.cidadao.model.UserAdapter;
+
 /**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @author <a href="mailto:wallacerock@gmail.com">Wallace Roque</a>
  * @version $Revision: 1 $
  */
 public class CidadaoStorageProvider implements 
@@ -134,12 +137,26 @@ public class CidadaoStorageProvider implements
             
             //UserModel userModel = session.userLocalStorage().getUserByUsername(cpf, realm);
             
-            UserAdapter userAdapter = new UserAdapter(session, realm, model, cidadao);
+            UserAdapter userAdapter = new UserAdapter(session, realm, model, this.identityStore, cidadao);
             
             if (userAdapter.isEnabled()) {
-            	logger.info("getUserByUsername: keycloakId:" + userAdapter.getId());
+            	logger.info("getUserByUsername: keycloakId: " + userAdapter.getId());
             	//session.userLocalStorage().addUser(realm, cpf);
-            	if (cidadao.isPrimeiroLogin()) userAdapter.addRequiredAction(RequiredAction.UPDATE_PASSWORD);
+            	if (cidadao.isPrimeiroLogin()) {
+            		Set<String> actions = session.userFederatedStorage().getRequiredActions(realm, userAdapter.getId());
+            		
+            		actions.forEach(action -> logger.info("getUserByUsername: " + action));
+            		
+            		if (actions.contains(RequiredAction.UPDATE_PASSWORD.toString())){
+            			logger.info("getUserByUsername: Required Action já está associada ao usuário.");
+            			session.userFederatedStorage().removeRequiredAction(realm, userAdapter.getId(), RequiredAction.UPDATE_PASSWORD.toString());            			
+            		}
+            		
+            		userAdapter.addRequiredAction(RequiredAction.UPDATE_PASSWORD);
+            		
+            	}
+            	//userAdapter.removeRequiredAction(RequiredAction.UPDATE_PASSWORD);
+            	//session.authenticationSessions().close();
             }
             
             //userManager.setManagedProxiedUser(adapter, cidadao);
@@ -163,7 +180,7 @@ public class CidadaoStorageProvider implements
              return null;
          }
          
-         UserAdapter adapter = new UserAdapter(session, realm, model, cidadao);
+         UserAdapter adapter = new UserAdapter(session, realm, model, this.identityStore, cidadao);
          
          //userManager.setManagedProxiedUser(adapter, cidadao);
 
@@ -233,9 +250,11 @@ public class CidadaoStorageProvider implements
 	        cidadao.setPrimeiroLogin(false);
 	        
 	        identityStore.update(cidadao);
-	
+	        
+	        logger.info("updateCredential: Senha alterada com sucesso!" );	
 	        return true;
 	    } catch (ModelException me) {
+	    	logger.info("updateCredential: Falha ao alterar a senha: ", me);
 	    	throw me;
 	    }
 	}

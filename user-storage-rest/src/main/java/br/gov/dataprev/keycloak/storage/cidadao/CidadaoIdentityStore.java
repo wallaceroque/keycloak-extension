@@ -14,6 +14,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.jboss.logging.Logger;
 import org.keycloak.models.ModelException;
 
+import br.gov.dataprev.keycloak.storage.cidadao.model.Cidadao;
 import br.gov.dataprev.keycloak.storage.rest.RESTConfig;
 import br.gov.dataprev.keycloak.storage.rest.RESTIdentityStore;
 

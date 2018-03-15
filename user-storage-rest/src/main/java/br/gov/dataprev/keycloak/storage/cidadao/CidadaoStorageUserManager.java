@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.keycloak.models.UserModel;
 
+import br.gov.dataprev.keycloak.storage.cidadao.model.Cidadao;
+
 public class CidadaoStorageUserManager {
 	
 	private final Map<String, ManagedUserEntry> managedUsers = new HashMap<>();

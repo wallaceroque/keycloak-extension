@@ -20,10 +20,11 @@
             <id>freemarker</id>
             <activation>
                 <property>
-                    <name>product</name>
+                    <name>dataprev</name>
                 </property>
             </activation>
             <build>
+            	<finalName>dtp-themes</finalName>
                 <resources>
                     <resource>
                         <directory>src/main/resources</directory>
@@ -33,6 +34,22 @@
                     <plugin>
                         <artifactId>maven-jar-plugin</artifactId>
                     </plugin>
+	                <plugin>
+		                <groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-deploy-plugin</artifactId>
+		                <configuration>
+		                    <skip>true</skip>
+		                </configuration>
+		            </plugin>
+	                <plugin>
+		                <groupId>org.wildfly.plugins</groupId>
+		                <artifactId>wildfly-maven-plugin</artifactId>
+		                <configuration>
+		                    <skip>false</skip>
+		                    <username>jboss</username>
+		                    <password>jboss00#</password>
+		                </configuration>
+		            </plugin>
                 </plugins>
             </build>
         </profile>

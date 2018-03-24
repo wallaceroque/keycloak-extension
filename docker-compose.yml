@@ -20,7 +20,8 @@ services:
       POSTGRES_PORT_5432_TCP_PORT: 5432
       SIAC_CONNECTION_URL: http://192.168.2.3:3000/api
     volumes:
-      - ./frontend/themes:/opt/jboss/keycloak/themes
+      #- ./dtp-themes/target/dtp-themes.zip:/opt/jboss/keycloak/standalone/deployments/dtp-themes.zip
+      - ./:/opt/jboss/workspace
     ports:
       - "8080:8080"
       - "9990:9990"

@@ -9,7 +9,7 @@ O objetivo é customizar o Keycloak utilizando as SPI (Service Provider Interfac
 - Docker versão 17.12.0-ce
 - Docker Compose versão 1.19.0
 - Keycloak versão 3.4.3.Final
-- PostgreSQL versão 9.6
+- PostgreSQL versão 9.4.5
 - Node 8.x
 - Loopback 3
 
@@ -70,8 +70,18 @@ docker exec -it keycloak-server keycloak/bin/jboss-cli.sh "module add --name=br.
 docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="/subsystem=keycloak-server/theme=defaults:list-add(name=modules,value="br.gov.dataprev.keycloak.dtp-themes")" --connect
 
 # Reiniciando o servidor
-docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="reload" --connect
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh -c ":shutdown(restart=true)"
 
+```
+
+Caso seja necessário atualizar o módulo previamente implantado, remova-o e reinicie o servidor:
+
+```bash
+# Removendo o módulo
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh "module remove --name=br.gov.dataprev.keycloak.dtp-themes" --connect
+
+# Reiniciando o servidor
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh -c ":shutdown(restart=true)"
 ```
 
 **Observação**:

@@ -64,7 +64,7 @@ Após a construção é necessário implantá-lo como módulo no JBoss:
 
 ```bash
 # Implantando o módulo
-docker exec -it keycloak-server keycloak/bin/jboss-cli.sh "module add --name=br.gov.dataprev.keycloak.dtp-themes --resources=workspace/dtp-themes/target/dtp-themes.jar" --connect
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="module add --name=br.gov.dataprev.keycloak.dtp-themes --resources=workspace/dtp-themes/target/dtp-themes.jar" --connect
 
 # Habilitando o módulo
 docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="/subsystem=keycloak-server/theme=defaults:list-add(name=modules,value="br.gov.dataprev.keycloak.dtp-themes")" --connect
@@ -78,13 +78,36 @@ Caso seja necessário atualizar o módulo previamente implantado, remova-o e rei
 
 ```bash
 # Removendo o módulo
-docker exec -it keycloak-server keycloak/bin/jboss-cli.sh "module remove --name=br.gov.dataprev.keycloak.dtp-themes" --connect
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="module remove --name=br.gov.dataprev.keycloak.dtp-themes" --connect
 
 # Reiniciando o servidor
 docker exec -it keycloak-server keycloak/bin/jboss-cli.sh -c ":shutdown(restart=true)"
 ```
 
-**Observação**:
+## Construindo e implantando o projeto de customização do painel de gestão de conta do usuário
+
+```bash
+# Implantando o módulo
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="module add --name=br.gov.dataprev.keycloak.user-profile-dashboard \n --dependencies=org.keycloak.keycloak-core,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,javax.ws.rs.api \n --resources=workspace/user-profile-dashboard/target/user-profile-dashboard.jar" --connect
+
+# Habilitando o módulo
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="/subsystem=keycloak-server:list-add(name=providers,value="module:br.gov.dataprev.keycloak.user-profile-dashboard")" --connect
+
+# Reiniciando o servidor
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh -c ":shutdown(restart=true)"
+```
+
+Caso seja necessário atualizar o módulo previamente implantado, remova-o e reinicie o servidor:
+
+```bash
+# Removendo o módulo
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh "module remove --name=br.gov.dataprev.keycloak.user-profile-dashboard" --connect
+
+# Reiniciando o servidor
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh -c ":shutdown(restart=true)"
+```
+
+## Observação
 
 Para o modo standalone:
 

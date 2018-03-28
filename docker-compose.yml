@@ -21,6 +21,7 @@ services:
       SIAC_CONNECTION_URL: http://192.168.2.3:3000/api
     volumes:
       #- ./dtp-themes/target/dtp-themes.zip:/opt/jboss/keycloak/standalone/deployments/dtp-themes.zip
+      - ./realms/cidadao.br.json:/opt/jboss/keycloak/realms/cidadao.br.json
       - ./:/opt/jboss/workspace
     ports:
       - "8080:8080"

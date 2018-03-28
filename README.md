@@ -88,7 +88,7 @@ docker exec -it keycloak-server keycloak/bin/jboss-cli.sh -c ":shutdown(restart=
 
 ```bash
 # Implantando o módulo
-docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="module add --name=br.gov.dataprev.keycloak.user-profile-dashboard \n --dependencies=org.keycloak.keycloak-core,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,javax.ws.rs.api \n --resources=workspace/user-profile-dashboard/target/user-profile-dashboard.jar" --connect
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="module add --name=br.gov.dataprev.keycloak.user-profile-dashboard \n --dependencies=org.keycloak.keycloak-core,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,org.keycloak.keycloak-services,javax.ws.rs.api \n --resources=workspace/user-profile-dashboard/target/user-profile-dashboard.jar" --connect
 
 # Habilitando o módulo
 docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="/subsystem=keycloak-server:list-add(name=providers,value="module:br.gov.dataprev.keycloak.user-profile-dashboard")" --connect

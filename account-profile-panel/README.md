@@ -1,3 +1,9 @@
+# Painel de Gestão de Contas do Usuário [DRAFT]
+
+Esse projeto foi criado para testar a criação de um resource realm do Keycloak que sirva como backend da interface do painel de gestão de contas.
+
+A intenção é estender as funcionalidades já embarcados no Keycloak, entretanto, isso pode trazer alguns efeitos indesejados e, por isso, esse projeto foi somente iniciado e, por enquanto, não há intenção de continuá-lo.
+
 ## Construindo e implantando o projeto de customização do painel de gestão de conta do usuário
 
 ```bash

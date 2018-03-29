@@ -37,7 +37,7 @@ O [Loopback 3](https://loopback.io/) oferece uma API rica de acordo com o domín
 
 A API criada pode ser consultada por meio do Swagger embarcado na aplicação no endereço **http://localhost:3000/explorer**.
 
-![API Person BR](docs/images/api-person-node.png)
+![API Person](docs/images/api-person-node.png)
 
 ## Iniciando o projeto
 

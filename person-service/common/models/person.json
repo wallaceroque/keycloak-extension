@@ -1,30 +1,30 @@
 {
-  "name": "Pessoa",
-  "plural": "pessoas",
+  "name": "Person",
+  "plural": "persons",
   "forceId": false,
   "remoting" : {
     "normalizeHttpPath" : true
   },
   "properties": {
-    "cpf": {
+    "id": {
       "type": "number",
       "required": true,
       "id": true
     },
-    "senha": {
+    "password": {
       "type": "string",
       "required": true
     },
-    "nome": {
+    "name": {
       "type": "string"
     },
     "email": {
       "type": "string"
      },
-    "telefone": {
+    "telephone": {
       "type": "string"
     },
-    "isPrimeiroLogin": {
+    "isFirstLogin": {
       "type": "boolean"
     }
   }

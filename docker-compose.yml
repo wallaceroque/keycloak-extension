@@ -7,6 +7,7 @@ services:
     build:
       context: .
     container_name: keycloak-server
+    command: ["-b", "0.0.0.0","-bmanagement","0.0.0.0","-Dkeycloak.import=/opt/jboss/keycloak/realms/pessoa.json"]
     environment:
       JBOSS_USER: jboss
       JBOSS_PASSWORD: jboss00#
@@ -21,7 +22,7 @@ services:
       SIAC_CONNECTION_URL: http://192.168.2.3:3000/api
     volumes:
       #- ./dtp-themes/target/dtp-themes.zip:/opt/jboss/keycloak/standalone/deployments/dtp-themes.zip
-      - ./realms/cidadao.br.json:/opt/jboss/keycloak/realms/cidadao.br.json
+      - ./realms/pessoa.json:/opt/jboss/keycloak/realms/pessoa.json
       - ./:/opt/jboss/workspace
     ports:
       - "8080:8080"

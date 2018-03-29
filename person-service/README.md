@@ -1,34 +1,34 @@
-# Pessoa Service
+# Person Service
 
-**pessoa-service** é um projeto em NodeJS para simular a API REST do domínio Pessoa.
+**person-service** é um projeto em NodeJS para simular a API REST do domínio Person.
 
 O [Loopback 3](https://loopback.io/) oferece uma API rica de acordo com o domínio declarado em arquivos JSON:
 
 ```json
 {
-  "name": "Pessoa",
-  "plural": "pessoas",
+  "name": "Person",
+  "plural": "persons",
   "forceId": false,
   "remoting" : {
     "normalizeHttpPath" : true
   },
   "properties": {
-    "cpf": {
+    "id": {
       "type": "number",
       "required": true,
       "id": true
     },
-    "senha": {
+    "password": {
       "type": "string",
       "required": true
     },
-    "nome": {
+    "name": {
       "type": "string"
     },
     "email": {
       "type": "string"
      },
-    "telefone": {
+    "telephone": {
       "type": "string"
     }
   }
@@ -37,7 +37,7 @@ O [Loopback 3](https://loopback.io/) oferece uma API rica de acordo com o domín
 
 A API criada pode ser consultada por meio do Swagger embarcado na aplicação no endereço **http://localhost:3000/explorer**.
 
-![API Cidadão BR](docs/images/api-siac-node.png)
+![API Person BR](docs/images/api-person-node.png)
 
 ## Iniciando o projeto
 

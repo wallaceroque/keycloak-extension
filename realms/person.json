@@ -1,8 +1,8 @@
 {
-    "id": "cidadao.br",
-    "realm": "cidadao.br",
-    "displayName": "Cidadão BR",
-    "displayNameHtml": "Cidadão BR",
+    "id": "person",
+    "realm": "person",
+    "displayName": "Person",
+    "displayNameHtml": "Person",
     "notBefore": 0,
     "revokeRefreshToken": false,
     "refreshTokenMaxReuse": 0,
@@ -43,7 +43,7 @@
           "scopeParamRequired": true,
           "composite": false,
           "clientRole": false,
-          "containerId": "cidadao.br"
+          "containerId": "person"
         },
         {
           "id": "b2ed1de1-43c1-4d68-86ef-4288e3f61ec5",
@@ -52,7 +52,7 @@
           "scopeParamRequired": false,
           "composite": false,
           "clientRole": false,
-          "containerId": "cidadao.br"
+          "containerId": "person"
         }
       ],
       "client": {
@@ -342,7 +342,7 @@
         "id": "563432b7-3f75-4566-b03a-f47440e4a0c9",
         "clientId": "account",
         "name": "${client_account}",
-        "baseUrl": "/auth/realms/cidadao.br/account",
+        "baseUrl": "/auth/realms/person/account",
         "surrogateAuthRequired": false,
         "enabled": true,
         "clientAuthenticatorType": "client-secret",
@@ -352,7 +352,7 @@
           "view-profile"
         ],
         "redirectUris": [
-          "/auth/realms/cidadao.br/account/*"
+          "/auth/realms/person/account/*"
         ],
         "webOrigins": [],
         "notBefore": 0,
@@ -821,13 +821,13 @@
         "id": "6c487e78-65da-4c7e-836f-aef29580d4b6",
         "clientId": "security-admin-console",
         "name": "${client_security-admin-console}",
-        "baseUrl": "/auth/admin/cidadao.br/console/index.html",
+        "baseUrl": "/auth/admin/person/console/index.html",
         "surrogateAuthRequired": false,
         "enabled": true,
         "clientAuthenticatorType": "client-secret",
         "secret": "**********",
         "redirectUris": [
-          "/auth/admin/cidadao.br/console/*"
+          "/auth/admin/person/console/*"
         ],
         "webOrigins": [],
         "notBefore": 0,
@@ -1537,10 +1537,10 @@
       "_browser_header.xFrameOptions": "SAMEORIGIN",
       "quickLoginCheckMilliSeconds": "1000",
       "permanentLockout": "false",
-      "displayName": "Cidadão BR",
+      "displayName": "Person",
       "_browser_header.xRobotsTag": "none",
       "maxFailureWaitSeconds": "900",
-      "displayNameHtml": "Cidadão BR",
+      "displayNameHtml": "Person",
       "minimumQuickLoginWaitSeconds": "60",
       "failureFactor": "30",
       "actionTokenGeneratedByUserLifespan": "300",

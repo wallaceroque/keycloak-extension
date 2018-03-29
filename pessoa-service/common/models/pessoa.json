@@ -1,6 +1,6 @@
 {
-  "name": "Cidadao",
-  "plural": "cidadaos",
+  "name": "Pessoa",
+  "plural": "pessoas",
   "forceId": false,
   "remoting" : {
     "normalizeHttpPath" : true

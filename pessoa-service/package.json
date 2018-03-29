@@ -1,5 +1,5 @@
 {
-  "name": "cidadao-service",
+  "name": "pessoa-service",
   "version": "1.0.0",
   "main": "server/server.js",
   "engines": {
@@ -29,6 +29,6 @@
     "type": "",
     "url": ""
   },
-  "license": "UNLICENSED",
-  "description": "cidadao-service"
+  "license": "MIT",
+  "description": "Projeto para simular a API de serviço para um Pessoa física"
 }

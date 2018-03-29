@@ -35,7 +35,7 @@
     "dataSource": "db",
     "public": false
   },
-  "Cidadao": {
+  "Pessoa": {
     "dataSource": "db"
   }
 }

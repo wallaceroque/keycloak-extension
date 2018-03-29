@@ -5,7 +5,7 @@
     "ACL": 1,
     "RoleMapping": 1,
     "Role": 1,
-    "Cidadao": 333
+    "Pessoa": 333
   },
   "models": {
     "User": {},
@@ -13,7 +13,7 @@
     "ACL": {},
     "RoleMapping": {},
     "Role": {},
-    "Cidadao": {
+    "Pessoa": {
       "111": "{\"cpf\":111,\"senha\":\"321321\",\"nome\":\"Irleide Moraes dos Santos\",\"email\":\"irleide@gmail.com\",\"telefone\":\"(21)983375116\",\"isPrimeiroLogin\":false}",
       "222": "{\"cpf\":222,\"senha\":\"123123\",\"nome\":\"Wallace Roque de Figueiredo\",\"email\":\"wallacerock@gmail.com\",\"telefone\":\"(21)969068767\",\"isPrimeiroLogin\":false}"
     }

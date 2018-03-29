@@ -28,7 +28,7 @@
     <name>User Profile Panel</name>
 
     <groupId>br.gov.dataprev.keycloak</groupId>
-    <artifactId>user-profile-dashboard</artifactId>
+    <artifactId>account-profile-panel</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -59,6 +59,6 @@
     </dependencies>
 
     <build>
-        <finalName>user-profile-dashboard</finalName>
+        <finalName>account-profile-panel</finalName>
     </build>
 </project>

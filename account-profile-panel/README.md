@@ -8,10 +8,10 @@ A intenção é estender as funcionalidades já embarcados no Keycloak, entretan
 
 ```bash
 # Implantando o módulo
-docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="module add --name=br.gov.dataprev.keycloak.account-profile-panel \n --dependencies=org.keycloak.keycloak-core,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,org.keycloak.keycloak-services,javax.ws.rs.api \n --resources=workspace/account-profile-panel/target/account-profile-panel.jar" --connect
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="module add --name=br.my.company.keycloak.account-profile-panel \n --dependencies=org.keycloak.keycloak-core,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,org.keycloak.keycloak-services,javax.ws.rs.api \n --resources=workspace/account-profile-panel/target/account-profile-panel.jar" --connect
 
 # Habilitando o módulo
-docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="/subsystem=keycloak-server:list-add(name=providers,value="module:br.gov.dataprev.keycloak.account-profile-panel")" --connect
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh --command="/subsystem=keycloak-server:list-add(name=providers,value="module:br.my.company.keycloak.account-profile-panel")" --connect
 
 # Reiniciando o servidor
 docker exec -it keycloak-server keycloak/bin/jboss-cli.sh -c ":shutdown(restart=true)"
@@ -21,7 +21,7 @@ Caso seja necessário atualizar o módulo previamente implantado, remova-o e rei
 
 ```bash
 # Removendo o módulo
-docker exec -it keycloak-server keycloak/bin/jboss-cli.sh "module remove --name=br.gov.dataprev.keycloak.account-profile-panel" --connect
+docker exec -it keycloak-server keycloak/bin/jboss-cli.sh "module remove --name=br.my.company.keycloak.account-profile-panel" --connect
 
 # Reiniciando o servidor
 docker exec -it keycloak-server keycloak/bin/jboss-cli.sh -c ":shutdown(restart=true)"

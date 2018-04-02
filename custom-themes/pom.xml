@@ -13,7 +13,7 @@
   	<artifactId>dtp-themes</artifactId>
   	<version>0.0.1-SNAPSHOT</version>
 
-  	<name>Dataprev Keycloak Themes</name>
+  	<name>Custom Keycloak Themes</name>
   	
   	<profiles>
         <profile>

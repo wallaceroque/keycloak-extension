@@ -1,4 +1,4 @@
-package br.gov.dataprev.rest;
+package br.my.company.rest;
 
 public class ProfileResource {
 

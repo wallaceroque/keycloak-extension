@@ -27,7 +27,7 @@
 
     <name>User Profile Panel</name>
 
-    <groupId>br.gov.dataprev.keycloak</groupId>
+    <groupId>br.my.company.keycloak</groupId>
     <artifactId>account-profile-panel</artifactId>
     <packaging>jar</packaging>
 

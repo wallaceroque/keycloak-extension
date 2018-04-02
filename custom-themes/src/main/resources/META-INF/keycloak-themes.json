@@ -1,6 +1,6 @@
 {
     "themes": [{
-        "name" : "dataprev",
+        "name" : "custom",
         "types": [ "admin", "account", "login", "common", "email", "welcome" ]
     }]
 }

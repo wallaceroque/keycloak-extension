@@ -15,38 +15,37 @@
  * limitations under the License.
  */
 
-package br.gov.dataprev.rest;
+package br.my.company.rest;
 
+import org.keycloak.Config.Scope;
 import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.services.resource.RealmResourceProvider;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
+import org.keycloak.services.resource.RealmResourceProviderFactory;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
-public class HelloResourceProvider implements RealmResourceProvider {
+public class HelloResourceProviderFactory implements RealmResourceProviderFactory {
 
-    private KeycloakSession session;
+    public static final String ID = "hello";
 
-    public HelloResourceProvider(KeycloakSession session) {
-        this.session = session;
+    @Override
+    public String getId() {
+        return ID;
     }
 
     @Override
-    public Object getResource() {
-        return this;
+    public RealmResourceProvider create(KeycloakSession session) {
+        return new HelloResourceProvider(session);
     }
 
-    @GET
-    @Produces("text/plain; charset=utf-8")
-    public String get() {
-        String name = session.getContext().getRealm().getDisplayName();
-        if (name == null) {
-            name = session.getContext().getRealm().getName();
-        }
-        return "Hello " + name;
+    @Override
+    public void init(Scope config) {
+    }
+
+    @Override
+    public void postInit(KeycloakSessionFactory factory) {
     }
 
     @Override

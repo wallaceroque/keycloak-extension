@@ -25,11 +25,12 @@
         <relativePath>parent/pom.xml</relativePath>
     </parent>
     
-    <name>User Storage Rest Provider Example</name>
+    <name>Account Storage Rest Provider Example</name>
     <description/>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>user-storage-rest</artifactId>
+    <groupId>br.my.company.keycloak</groupId>
+    <artifactId>account-storage-rest</artifactId>
     <packaging>jar</packaging>
     <version>0.0.1-SNAPSHOT</version>
 

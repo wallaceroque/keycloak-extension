@@ -1,4 +1,4 @@
-package br.gov.dataprev.keycloak.storage.cidadao.model;
+package br.my.company.keycloak.storage.person.model;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.keycloak.storage.ReadOnlyException;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 
-import br.gov.dataprev.keycloak.storage.rest.RESTIdentityStore;
+import br.my.company.keycloak.storage.rest.RESTIdentityStore;
 
 /**
  * TODO: Deve ser verificado se o Keycloak pode alterar o cpf e outros atributos do usuário ao utilizar this.entity.setCpf. 
@@ -30,15 +30,15 @@ import br.gov.dataprev.keycloak.storage.rest.RESTIdentityStore;
  */
 public class UserAdapter extends AbstractUserAdapterFederatedStorage {
     private static final Logger logger = Logger.getLogger(UserAdapter.class);
-    protected Cidadao entity;
+    protected Person entity;
     protected String keycloakId;
-    protected RESTIdentityStore<Cidadao> identityStore;
+    protected RESTIdentityStore<Person> identityStore;
 
-    public UserAdapter(KeycloakSession session, RealmModel realm, ComponentModel model, RESTIdentityStore<Cidadao> identityStore, Cidadao entity) {
+    public UserAdapter(KeycloakSession session, RealmModel realm, ComponentModel model, RESTIdentityStore<Person> identityStore, Person entity) {
         super(session, realm, model);
         this.entity = entity;
         logger.info("UserAdapter: entity: " + entity.toString());
-        this.keycloakId = StorageId.keycloakId(model, String.valueOf(this.entity.getCpf()));
+        this.keycloakId = StorageId.keycloakId(model, String.valueOf(this.entity.getId()));
         this.identityStore = identityStore;
     }
 
@@ -52,7 +52,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 
     @Override
     public String getUsername() {
-        return this.entity.getCpf().toString();
+        return this.entity.getId().toString();
     }
 
     @Override

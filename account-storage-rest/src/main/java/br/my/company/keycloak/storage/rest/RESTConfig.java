@@ -1,4 +1,4 @@
-package br.gov.dataprev.keycloak.storage.rest;
+package br.my.company.keycloak.storage.rest;
 
 public class RESTConfig {
 	

@@ -1,8 +1,8 @@
-package br.gov.dataprev.keycloak.storage.rest;
+package br.my.company.keycloak.storage.rest;
 
 import javax.naming.AuthenticationException;
 
-import br.gov.dataprev.keycloak.storage.rest.model.Entity;
+import br.my.company.keycloak.storage.rest.model.Entity;
 
 public interface RESTIdentityStore<T extends Entity> {
 	

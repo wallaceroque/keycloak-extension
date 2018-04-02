@@ -1,4 +1,4 @@
-package br.gov.dataprev.keycloak.storage.cidadao;
+package br.my.company.keycloak.storage.person;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,27 +10,27 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.provider.ServerInfoAwareProviderFactory;
 import org.keycloak.storage.UserStorageProviderFactory;
 
-import br.gov.dataprev.keycloak.storage.cidadao.model.Cidadao;
-import br.gov.dataprev.keycloak.storage.rest.RESTIdentityStore;
+import br.my.company.keycloak.storage.person.model.Person;
+import br.my.company.keycloak.storage.rest.RESTIdentityStore;
 
 /**
  * @author <a href="mailto:wallacerock@gmail.com">Wallace Roque</a>
  * @version $Revision: 1 $
  */
-public class CidadaoStorageProviderFactory implements 
-	UserStorageProviderFactory<CidadaoStorageProvider>,
+public class PersonStorageProviderFactory implements 
+	UserStorageProviderFactory<PersonStorageProvider>,
 	ServerInfoAwareProviderFactory {
 	
-    private static final Logger logger = Logger.getLogger(CidadaoStorageProviderFactory.class);
+    private static final Logger logger = Logger.getLogger(PersonStorageProviderFactory.class);
     
-    private CidadaoIdentityStoreRegistry restStoreRegistry;
-    RESTIdentityStore<Cidadao>identityStore;
+    private PersonIdentityStoreRegistry restStoreRegistry;
+    RESTIdentityStore<Person>identityStore;
 
     @Override
-    public CidadaoStorageProvider create(KeycloakSession session, ComponentModel model) {
+    public PersonStorageProvider create(KeycloakSession session, ComponentModel model) {
     	try {
     		this.identityStore = this.restStoreRegistry.getRestStore(session, model);
-            CidadaoStorageProvider provider = new CidadaoStorageProvider(this, session, model, (CidadaoIdentityStore)this.identityStore);
+            PersonStorageProvider provider = new PersonStorageProvider(this, session, model, (PersonIdentityStore)this.identityStore);
             return provider;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -47,7 +47,7 @@ public class CidadaoStorageProviderFactory implements
 
     @Override
     public String getId() {
-        return "Cidadão Storage Provider";
+        return "Person Storage Provider";
     }
 
     @Override
@@ -57,7 +57,7 @@ public class CidadaoStorageProviderFactory implements
     
     @Override
     public void init(Config.Scope config) {
-        this.restStoreRegistry = new CidadaoIdentityStoreRegistry();
+        this.restStoreRegistry = new PersonIdentityStoreRegistry();
     }
 
     @Override

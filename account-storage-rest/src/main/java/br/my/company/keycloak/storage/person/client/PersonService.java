@@ -1,4 +1,4 @@
-package br.gov.dataprev.keycloak.storage.cidadao.client;
+package br.my.company.keycloak.storage.person.client;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -12,20 +12,20 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import br.gov.dataprev.keycloak.storage.cidadao.model.Cidadao;
-import br.gov.dataprev.keycloak.storage.rest.client.PATCH;
+import br.my.company.keycloak.storage.person.model.Person;
+import br.my.company.keycloak.storage.rest.client.PATCH;
 
-@Path("/cidadaos")
-public interface CidadaoService {
+@Path("/persons")
+public interface PersonService {
 	
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	Response getAll(@QueryParam("filter") String filtros);
 	
 	@GET
-	@Path("/{cpf}")
+	@Path("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
-	Response getByCpf(@PathParam("cpf") Long cpf);
+	Response getById(@PathParam("id") Long id);
 	
 	@GET
 	@Path("/count")
@@ -35,23 +35,23 @@ public interface CidadaoService {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	Response addCidadao(Cidadao cidadao);
+	Response addCidadao(Person person);
 	
 	@PUT
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	Response updateCidadao(Cidadao cidadao);
+	Response updateCidadao(Person person);
 	
 	@PATCH
-	@Path("/{cpf}")
+	@Path("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	Response updateParcialCidadao(@PathParam("cpf") Long cpf, Cidadao cidadao);
+	Response updateParcialCidadao(@PathParam("id") Long id, Person cidadao);
 	
 	@DELETE
-	@Path("/{cpf}")
+	@Path("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	Response removeCidadao(@PathParam("cpf") Integer cpf);
+	Response removeCidadao(@PathParam("id") Long id);
 
 }

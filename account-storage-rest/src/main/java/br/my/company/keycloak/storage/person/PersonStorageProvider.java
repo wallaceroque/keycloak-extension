@@ -1,5 +1,5 @@
 
-package br.gov.dataprev.keycloak.storage.cidadao;
+package br.my.company.keycloak.storage.person;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,22 +21,20 @@ import org.keycloak.models.UserModel;
 import org.keycloak.models.UserModel.RequiredAction;
 import org.keycloak.models.cache.CachedUserModel;
 import org.keycloak.models.credential.PasswordUserCredentialModel;
-import org.keycloak.models.utils.UserModelDelegate;
 import org.keycloak.policy.PasswordPolicyManagerProvider;
 import org.keycloak.policy.PolicyError;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
-import org.keycloak.storage.federated.UserFederatedStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
 
-import br.gov.dataprev.keycloak.storage.cidadao.model.Cidadao;
-import br.gov.dataprev.keycloak.storage.cidadao.model.UserAdapter;
+import br.my.company.keycloak.storage.person.model.Person;
+import br.my.company.keycloak.storage.person.model.UserAdapter;
 
 /**
  * @author <a href="mailto:wallacerock@gmail.com">Wallace Roque</a>
  * @version $Revision: 1 $
  */
-public class CidadaoStorageProvider implements 
+public class PersonStorageProvider implements 
 		UserStorageProvider,
 		UserLookupProvider,
 		CredentialInputValidator,
@@ -46,15 +44,15 @@ public class CidadaoStorageProvider implements
 //		ImportedUserValidation
         // OnUserCache
 {
-    private static final Logger logger = Logger.getLogger(CidadaoStorageProvider.class);
+    private static final Logger logger = Logger.getLogger(PersonStorageProvider.class);
     public static final String PASSWORD_CACHE_KEY = UserAdapter.class.getName() + ".password";
 
     protected ComponentModel model;
     protected KeycloakSession session;
     
-    protected CidadaoStorageProviderFactory factory;
+    protected PersonStorageProviderFactory factory;
     //protected UserStorageProviderModel model;
-    protected CidadaoIdentityStore identityStore;
+    protected PersonIdentityStore identityStore;
     //protected CidadaoService service;
     //protected PasswordUpdateCallback updater;
     //protected LDAPStorageMapperManager mapperManager;
@@ -62,7 +60,7 @@ public class CidadaoStorageProvider implements
     
     protected final Set<String> supportedCredentialTypes = new HashSet<>();
     
-    public CidadaoStorageProvider(CidadaoStorageProviderFactory factory, KeycloakSession session, ComponentModel model, CidadaoIdentityStore identityStore) {
+    public PersonStorageProvider(PersonStorageProviderFactory factory, KeycloakSession session, ComponentModel model, PersonIdentityStore identityStore) {
     	logger.debug("provider: constructor");
         this.factory = factory;
         this.session = session;
@@ -105,11 +103,11 @@ public class CidadaoStorageProvider implements
 	}
     
     @Override
-	public UserModel getUserByUsername(String cpf, RealmModel realm) {
-    	logger.info("getUserByUsername: cpf: " + cpf);
+	public UserModel getUserByUsername(String id, RealmModel realm) {
+    	logger.info("getUserByUsername: id: " + id);
     	logger.info("getUserByUsername: count local storage: " + session.userLocalStorage().getUsersCount(realm));
     	logger.info("getUserByUsername: count federated storage: " + session.userFederatedStorage().getStoredUsersCount(realm));
-    	Set<FederatedIdentityModel> models = session.userFederatedStorage().getFederatedIdentities(new StorageId(cpf).getId(), realm);
+    	Set<FederatedIdentityModel> models = session.userFederatedStorage().getFederatedIdentities(new StorageId(id).getId(), realm);
     	logger.info("getUserByUsername: count federated identity model stored: " + models.size());
     	
     	try{
@@ -123,26 +121,26 @@ public class CidadaoStorageProvider implements
             federatedStoredUsers.forEach(user -> {
             	logger.info("getUserByUsername: user from federated storage: " + user);
 	            session.userFederatedStorage()
-	        		.getRequiredActions(realm, new StorageId(cpf).getId())
+	        		.getRequiredActions(realm, new StorageId(id).getId())
 	        		.forEach(requiredAction -> 
 	        			logger.info("getUserByUsername: required action from federated storage: " + requiredAction));
 	            });
             
             ///////////////////////////////////////////////////////////
             
-            Cidadao cidadao = identityStore.searchById(Long.valueOf(cpf));
-            if (cidadao == null) {
+            Person person = identityStore.searchById(Long.valueOf(id));
+            if (person == null) {
                 return null;
             }
             
-            //UserModel userModel = session.userLocalStorage().getUserByUsername(cpf, realm);
+            //UserModel userModel = session.userLocalStorage().getUserByUsername(id, realm);
             
-            UserAdapter userAdapter = new UserAdapter(session, realm, model, this.identityStore, cidadao);
+            UserAdapter userAdapter = new UserAdapter(session, realm, model, this.identityStore, person);
             
             if (userAdapter.isEnabled()) {
             	logger.info("getUserByUsername: keycloakId: " + userAdapter.getId());
-            	//session.userLocalStorage().addUser(realm, cpf);
-            	if (cidadao.isPrimeiroLogin()) {
+            	//session.userLocalStorage().addUser(realm, id);
+            	if (person.isPrimeiroLogin()) {
             		Set<String> actions = session.userFederatedStorage().getRequiredActions(realm, userAdapter.getId());
             		
             		actions.forEach(action -> logger.info("getUserByUsername: " + action));
@@ -159,7 +157,7 @@ public class CidadaoStorageProvider implements
             	//session.authenticationSessions().close();
             }
             
-            //userManager.setManagedProxiedUser(adapter, cidadao);
+            //userManager.setManagedProxiedUser(adapter, person);
 
             return userAdapter;
     		
@@ -174,19 +172,19 @@ public class CidadaoStorageProvider implements
     @Override
 	public UserModel getUserByEmail(String email, RealmModel realm) {
     	logger.info("getUserByEmail: email: " + email);
-    	Cidadao cidadao = identityStore.searchByEmail(email);
+    	Person person = identityStore.searchByEmail(email);
     	
-         if (cidadao == null) {
+         if (person == null) {
              return null;
          }
          
-         UserAdapter adapter = new UserAdapter(session, realm, model, this.identityStore, cidadao);
+         UserAdapter adapter = new UserAdapter(session, realm, model, this.identityStore, person);
          
-         //userManager.setManagedProxiedUser(adapter, cidadao);
+         //userManager.setManagedProxiedUser(adapter, person);
 
          return adapter;
 
-         //return new UserAdapter(session, realm, model, cidadao);
+         //return new UserAdapter(session, realm, model, person);
 	}
     
     
@@ -202,10 +200,10 @@ public class CidadaoStorageProvider implements
 		if (!supportsCredentialType(input.getType()) || !(input instanceof UserCredentialModel)) return false;
 		logger.info("isValid: UserModel.getId() -> " + user.getId());
         //UserAdapter adapter = (UserAdapter)getUserByUsername(StorageId.externalId(user.getId()), realm);
-		Cidadao cidadao = identityStore.searchById(Long.valueOf((StorageId.externalId(user.getId()))));
+		Person person = identityStore.searchById(Long.valueOf((StorageId.externalId(user.getId()))));
 
         //String password = getPassword(adapter);
-		String password = cidadao.getSenha();
+		String password = person.getSenha();
         UserCredentialModel cred = (UserCredentialModel)input;
         PolicyError error = session.getProvider(PasswordPolicyManagerProvider.class).validate(realm, user, password);
         logger.info("isValid: input -> " + cred.getValue() + " user password -> " + password);
@@ -245,11 +243,11 @@ public class CidadaoStorageProvider implements
         if (error != null) throw new ModelException(error.getMessage(), error.getParameters());
 	    
         try {
-        	Cidadao cidadao = identityStore.searchById(Long.valueOf((StorageId.externalId(user.getId()))));
-	        cidadao.setSenha(password);
-	        cidadao.setPrimeiroLogin(false);
+        	Person person = identityStore.searchById(Long.valueOf((StorageId.externalId(user.getId()))));
+	        person.setSenha(password);
+	        person.setPrimeiroLogin(false);
 	        
-	        identityStore.update(cidadao);
+	        identityStore.update(person);
 	        
 	        logger.info("updateCredential: Senha alterada com sucesso!" );	
 	        return true;
@@ -288,7 +286,7 @@ public class CidadaoStorageProvider implements
         return password;
     }
     
-    public void setIdentityStore(CidadaoIdentityStore restStore) {
+    public void setIdentityStore(PersonIdentityStore restStore) {
     	this.identityStore = restStore;
     }
 

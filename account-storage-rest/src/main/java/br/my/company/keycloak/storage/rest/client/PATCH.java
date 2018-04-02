@@ -1,4 +1,4 @@
-package br.gov.dataprev.keycloak.storage.rest.client;
+package br.my.company.keycloak.storage.rest.client;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

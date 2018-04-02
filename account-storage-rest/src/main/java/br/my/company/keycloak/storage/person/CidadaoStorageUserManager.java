@@ -1,18 +1,18 @@
-package br.gov.dataprev.keycloak.storage.cidadao;
+package br.my.company.keycloak.storage.person;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.keycloak.models.UserModel;
 
-import br.gov.dataprev.keycloak.storage.cidadao.model.Cidadao;
+import br.my.company.keycloak.storage.person.model.Person;
 
 public class CidadaoStorageUserManager {
 	
 	private final Map<String, ManagedUserEntry> managedUsers = new HashMap<>();
-    private final CidadaoStorageProvider provider;
+    private final PersonStorageProvider provider;
 
-    public CidadaoStorageUserManager(CidadaoStorageProvider provider) {
+    public CidadaoStorageUserManager(PersonStorageProvider provider) {
         this.provider = provider;
     }
     
@@ -21,12 +21,12 @@ public class CidadaoStorageUserManager {
         return entry==null ? null : entry.getManagedProxiedUser();
     }
 
-    public Cidadao getManagedCidadaoUser(String userId) {
+    public Person getManagedCidadaoUser(String userId) {
         ManagedUserEntry entry = managedUsers.get(userId);
-        return entry==null ? null : entry.getCidadaoUser();
+        return entry==null ? null : entry.getPersonUser();
     }
     
-    public void setManagedProxiedUser(UserModel proxiedUser, Cidadao cidadao) {
+    public void setManagedProxiedUser(UserModel proxiedUser, Person cidadao) {
         String userId = proxiedUser.getId();
         ManagedUserEntry entry = managedUsers.get(userId);
         if (entry != null) {
@@ -41,12 +41,12 @@ public class CidadaoStorageUserManager {
     private static class ManagedUserEntry {
 
         private final UserModel managedProxiedUser;
-        private final Cidadao cidadaoUser;
+        private final Person person;
         //private final LDAPTransaction ldapTransaction;
 
-        public ManagedUserEntry(UserModel managedProxiedUser, Cidadao cidadaoUser) {
+        public ManagedUserEntry(UserModel managedProxiedUser, Person user) {
             this.managedProxiedUser = managedProxiedUser;
-            this.cidadaoUser = cidadaoUser;
+            this.person = user;
             //this.ldapTransaction = ldapTransaction;
         }
 
@@ -54,8 +54,8 @@ public class CidadaoStorageUserManager {
             return managedProxiedUser;
         }
 
-        public Cidadao getCidadaoUser() {
-            return cidadaoUser;
+        public Person getPersonUser() {
+            return person;
         }
 
         /*public LDAPTransaction getLdapTransaction() {

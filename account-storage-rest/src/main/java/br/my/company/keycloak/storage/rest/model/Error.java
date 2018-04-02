@@ -1,4 +1,4 @@
-package br.gov.dataprev.keycloak.storage.rest.model;
+package br.my.company.keycloak.storage.rest.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

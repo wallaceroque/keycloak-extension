@@ -1,4 +1,4 @@
-package br.gov.dataprev.keycloak.storage.cidadao;
+package br.my.company.keycloak.storage.person;
 
 import javax.naming.AuthenticationException;
 import javax.ws.rs.BadRequestException;
@@ -14,18 +14,18 @@ import javax.ws.rs.core.UriBuilder;
 import org.jboss.logging.Logger;
 import org.keycloak.models.ModelException;
 
-import br.gov.dataprev.keycloak.storage.cidadao.model.Cidadao;
-import br.gov.dataprev.keycloak.storage.rest.RESTConfig;
-import br.gov.dataprev.keycloak.storage.rest.RESTIdentityStore;
+import br.my.company.keycloak.storage.person.model.Person;
+import br.my.company.keycloak.storage.rest.RESTConfig;
+import br.my.company.keycloak.storage.rest.RESTIdentityStore;
 
-public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
+public class PersonIdentityStore implements RESTIdentityStore<Person> {
 	
-	private static final Logger logger = Logger.getLogger(CidadaoIdentityStore.class);
+	private static final Logger logger = Logger.getLogger(PersonIdentityStore.class);
 	
 	private RESTConfig config;
 	private WebTarget api;
 	
-	public CidadaoIdentityStore(RESTConfig config) {
+	public PersonIdentityStore(RESTConfig config) {
         this.config = config;
         
         logger.info("SIAC_CONNECTION_URL " + config.getConnectionUrl());
@@ -40,12 +40,12 @@ public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
 	}
 	
 	@Override
-	public Cidadao searchById(Long cpf) {
-		Cidadao cidadao = null;
+	public Person searchById(Long id) {
+		Person person = null;
 		Response response = null;
 		try {
-			response = this.api.path("cidadaos/{cpf}")
-					.resolveTemplate("cpf", cpf.toString())
+			response = this.api.path("persons/{id}")
+					.resolveTemplate("id", id.toString())
 					.request(MediaType.APPLICATION_JSON)
 					.get();
 			
@@ -54,41 +54,41 @@ public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
 			}
 			
 			if (response.getStatus() == 404) {
-				throw new NotFoundException("Não foi possível consultar pelo CPF: " + cpf);
+				throw new NotFoundException("Não foi possível consultar pelo ID: " + id);
 			}
 			
 			if (response.getStatus() == 200) {
-				cidadao = response.readEntity(Cidadao.class);
+				person = response.readEntity(Person.class);
 			}
 			
 		} catch (Exception e) {
-			throw new ModelException("Não foi possível encontrar o CPF: " + cpf, e);
+			throw new ModelException("Não foi possível encontrar o ID: " + id, e);
 			//throw new RuntimeException(e);
 		} finally {
 			if (response != null) response.close();
 		}
 		
-		return cidadao;
+		return person;
 	}
 	
-	public Cidadao searchByEmail(String email) {
-		Cidadao cidadao = null;
+	public Person searchByEmail(String email) {
+		Person person = null;
 		Response response = null;
 		
 		try {
 			
 			// String filter = "?filter[where][and][0][email][regexp]=/" + email + "/i";
-			response = this.api.path("cidadaos")
+			response = this.api.path("persons")
 					.queryParam("filter[where][and][0][email][regexp]","/" + email + "/i")
 					.request(MediaType.APPLICATION_JSON)
 					.get();
 			
 			if (response.getStatus() == 404) {
-				throw new NotFoundException("Não foi possível consultar pelo CPF: ");
+				throw new NotFoundException("Não foi possível consultar pelo ID: ");
 			}
 			
 			if (response.getStatus() == 200) {
-				cidadao = response.readEntity(Cidadao.class);
+				person = response.readEntity(Person.class);
 			}
 			
 		} catch (NotFoundException e) {
@@ -100,26 +100,26 @@ public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
 			if (response != null) response.close();
 		}
 		
-		return cidadao;
+		return person;
 		
 	}
 
 	@Override
-	public void add(Cidadao entity) {
+	public void add(Person entity) {
 	}
 	
 	@Override
-	public void remove(Cidadao entidade) {
+	public void remove(Person entidade) {
 	}
 
 	@Override
-	public void update(Cidadao entity) {
+	public void update(Person entity) {
 		Response response = null;
 		
 		try {
-			//service.updateParcialCidadao(entity.getCpf(), entity);
-			response = this.api.path("cidadaos/{cpf}")
-					.resolveTemplate("cpf", entity.getCpf().toString())
+			//service.updateParcialPerson(entity.getId(), entity);
+			response = this.api.path("persons/{id}")
+					.resolveTemplate("id", entity.getId().toString())
 					.request(MediaType.APPLICATION_JSON)
 					.build("PATCH", Entity.json(entity))
 					.invoke();
@@ -128,14 +128,14 @@ public class CidadaoIdentityStore implements RESTIdentityStore<Cidadao> {
 				throw new BadRequestException(response);
 			}
 		} catch(Exception e) {
-			throw new ModelException("Não foi possível atualizar o usuário de CPF: " + entity.getCpf() , e);
+			throw new ModelException("Não foi possível atualizar o usuário de ID: " + entity.getId() , e);
 		} finally {
 			if (response != null) response.close();
 		}
 	}
 
 	@Override
-	public void validatePassword(Cidadao entity, String senha) throws AuthenticationException {
+	public void validatePassword(Person entity, String senha) throws AuthenticationException {
 		// TODO Auto-generated method stub
 		
 	}

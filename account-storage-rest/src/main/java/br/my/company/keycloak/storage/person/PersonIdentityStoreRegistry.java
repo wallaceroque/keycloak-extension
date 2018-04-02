@@ -1,4 +1,4 @@
-package br.gov.dataprev.keycloak.storage.cidadao;
+package br.my.company.keycloak.storage.person;
 
 import java.util.List;
 import java.util.Map;
@@ -9,16 +9,16 @@ import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 
-import br.gov.dataprev.keycloak.storage.rest.RESTConfig;
+import br.my.company.keycloak.storage.rest.RESTConfig;
 
-public class CidadaoIdentityStoreRegistry {
+public class PersonIdentityStoreRegistry {
 	
-	private static final Logger logger = Logger.getLogger(CidadaoIdentityStoreRegistry.class);
+	private static final Logger logger = Logger.getLogger(PersonIdentityStoreRegistry.class);
 
-    private Map<String, CidadaoIdentityStoreContext> restStores = new ConcurrentHashMap<>();
+    private Map<String, PersonIdentityStoreContext> restStores = new ConcurrentHashMap<>();
 
-    public CidadaoIdentityStore getRestStore(KeycloakSession session, ComponentModel restModel) {
-        CidadaoIdentityStoreContext context = restStores.get(restModel.getId());
+    public PersonIdentityStore getRestStore(KeycloakSession session, ComponentModel restModel) {
+        PersonIdentityStoreContext context = restStores.get(restModel.getId());
 
         //MultivaluedHashMap<String, String> configModel = restModel.getConfig();
         RESTConfig restConfig = new RESTConfig();
@@ -26,9 +26,9 @@ public class CidadaoIdentityStoreRegistry {
         if (context == null || !restConfig.equals(context.config)) {
             logRESTConfig(session, restModel, restConfig);
 
-            CidadaoIdentityStore store = createRestIdentityStore(restConfig);
+            PersonIdentityStore store = createRestIdentityStore(restConfig);
             
-            context = new CidadaoIdentityStoreContext(restConfig, store);
+            context = new PersonIdentityStoreContext(restConfig, store);
             restStores.put(restModel.getId(), context);
         }
         return context.store;
@@ -50,12 +50,12 @@ public class CidadaoIdentityStoreRegistry {
     }
 
     /**
-     * Create CidadaoIdentityStore to be cached in the local registry
+     * Create PersonIdentityStore to be cached in the local registry
      */
-    public static CidadaoIdentityStore createRestIdentityStore(RESTConfig config) {
+    public static PersonIdentityStore createRestIdentityStore(RESTConfig config) {
     	checkSystemProperty("SIAC_CONNECTION_URL", "http://siac/api");
 
-        return new CidadaoIdentityStore(config);
+        return new PersonIdentityStore(config);
     }
 
     private static void checkSystemProperty(String name, String defaultValue) {
@@ -69,15 +69,15 @@ public class CidadaoIdentityStoreRegistry {
     	
     }
 
-    private class CidadaoIdentityStoreContext {
+    private class PersonIdentityStoreContext {
 
-        private CidadaoIdentityStoreContext(RESTConfig config, CidadaoIdentityStore store) {
+        private PersonIdentityStoreContext(RESTConfig config, PersonIdentityStore store) {
             this.config = config;
             this.store = store;
         }
 
         private RESTConfig config;
-        private CidadaoIdentityStore store;
+        private PersonIdentityStore store;
     }
 
 }

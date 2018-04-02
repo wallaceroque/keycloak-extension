@@ -1,5 +1,5 @@
 
-package br.gov.dataprev.keycloak.storage.cidadao.model;
+package br.my.company.keycloak.storage.person.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -7,14 +7,14 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import br.gov.dataprev.keycloak.storage.rest.model.Entity;
+import br.my.company.keycloak.storage.rest.model.Entity;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "cidadao", propOrder = { "cpf" })
+@XmlType(name = "person", propOrder = { "id" })
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class Cidadao implements Entity {
+public class Person implements Entity {
     
-    private Long cpf;
+    private Long id;
 
     private String nome;
     private String email;
@@ -22,12 +22,12 @@ public class Cidadao implements Entity {
     private String telefone;
     private boolean isPrimeiroLogin;
 
-    public Long getCpf() {
-        return cpf;
+    public Long getId() {
+        return id;
     }
 
-    public void setCpf(Long cpf) {
-        this.cpf = cpf;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -73,7 +73,7 @@ public class Cidadao implements Entity {
     @Override
     public String toString() {
     	return "{"
-    			+ "\"cpf\":" + getCpf()
+    			+ "\"id\":" + getId()
     			+ "\"senha\":" + getSenha()
     			+ "\"nome\":" + getNome()
     			+ "\"email\":" + getEmail()

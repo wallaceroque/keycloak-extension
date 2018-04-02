@@ -186,7 +186,7 @@
         </dependency>
     </dependencies>
     <build>
-    	<finalName>dtp-keycloak-services-3.4.3.Final</finalName>
+    	<finalName>custom-keycloak-services-3.4.3.Final</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

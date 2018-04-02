@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-	<groupId>br.gov.dataprev.keycloak</groupId>
-  	<artifactId>dtp-themes</artifactId>
+	<groupId>br.my.company.keycloak</groupId>
+  	<artifactId>custom-themes</artifactId>
   	<version>0.0.1-SNAPSHOT</version>
 
   	<name>Custom Keycloak Themes</name>
@@ -20,11 +20,11 @@
             <id>freemarker</id>
             <activation>
                 <property>
-                    <name>dataprev</name>
+                    <name>custom</name>
                 </property>
             </activation>
             <build>
-            	<finalName>dtp-themes</finalName>
+            	<finalName>custom-themes</finalName>
                 <resources>
                     <resource>
                         <directory>src/main/resources</directory>

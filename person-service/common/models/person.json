@@ -24,7 +24,10 @@
     "telephone": {
       "type": "string"
     },
-    "isFirstLogin": {
+    "isEnabled": {
+      "type": "boolean"
+    },
+    "isMustChangePassword": {
       "type": "boolean"
     }
   }

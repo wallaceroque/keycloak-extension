@@ -11,16 +11,17 @@ module.exports = function(Person) {
     }
     next();
   });
+
   Person.beforeRemote('prototype.patchAttributes', (ctx, user, next) => {
     console.log(ctx.methodString, 'was invoked remotely');
 
     if (ctx.req.params.id && ctx.args.data && ctx.args.data.password) {
       console.log(ctx.args);
       console.log(ctx.req.params);
-      Person.findById(ctx.req.params.id, (erroNaBusca, person) => {
+      /*Person.findById(ctx.req.params.id, (erroNaBusca, person) => {
         if (person && !person.isEnabled)
           next(new Error('Usuário não está habilitado'));
-      });
+      });*/
     }
     console.log("\n\n\n");
 

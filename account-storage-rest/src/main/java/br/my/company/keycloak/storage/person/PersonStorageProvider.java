@@ -143,8 +143,6 @@ public class PersonStorageProvider implements
     	            
         UserAdapter userAdapter = new UserAdapter(session, realm, model, this.identityStore, person);
         
-        //
-        
         if (userAdapter.isEnabled()) {
         	if (person.isMustChangePassword()) {
         		this.forceUpdatePasswordInNextLogin(realm, userAdapter);

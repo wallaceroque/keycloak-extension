@@ -92,7 +92,7 @@
     </dependencies>
 
     <build>
-        <finalName>user-storage-rest</finalName>
+        <finalName>account-storage-rest</finalName>
         <plugins>
         	<plugin>
                 <groupId>org.apache.maven.plugins</groupId>

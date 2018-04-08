@@ -7,12 +7,12 @@ import org.keycloak.models.UserModel;
 
 import br.my.company.keycloak.storage.person.model.Person;
 
-public class CidadaoStorageUserManager {
+public class PersonStorageUserManager {
 	
 	private final Map<String, ManagedUserEntry> managedUsers = new HashMap<>();
     private final PersonStorageProvider provider;
 
-    public CidadaoStorageUserManager(PersonStorageProvider provider) {
+    public PersonStorageUserManager(PersonStorageProvider provider) {
         this.provider = provider;
     }
     
@@ -21,12 +21,12 @@ public class CidadaoStorageUserManager {
         return entry==null ? null : entry.getManagedProxiedUser();
     }
 
-    public Person getManagedCidadaoUser(String userId) {
+    public Person getManagedPersonUser(String userId) {
         ManagedUserEntry entry = managedUsers.get(userId);
         return entry==null ? null : entry.getPersonUser();
     }
     
-    public void setManagedProxiedUser(UserModel proxiedUser, Person cidadao) {
+    public void setManagedProxiedUser(UserModel proxiedUser, Person person) {
         String userId = proxiedUser.getId();
         ManagedUserEntry entry = managedUsers.get(userId);
         if (entry != null) {
@@ -34,7 +34,7 @@ public class CidadaoStorageUserManager {
         }
 
         //LDAPTransaction ldapTransaction = new LDAPTransaction(provider, ldapObject);
-        ManagedUserEntry newEntry = new ManagedUserEntry(proxiedUser, cidadao);
+        ManagedUserEntry newEntry = new ManagedUserEntry(proxiedUser, person);
         managedUsers.put(userId, newEntry);
     }
     

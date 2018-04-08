@@ -1,18 +1,21 @@
 package br.my.company.keycloak.storage.person;
 
+import java.util.List;
+
 import javax.naming.AuthenticationException;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.jboss.logging.Logger;
-import org.keycloak.models.ModelException;
 
 import br.my.company.keycloak.storage.person.model.Person;
 import br.my.company.keycloak.storage.rest.RESTConfig;
@@ -40,7 +43,7 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 	}
 	
 	@Override
-	public Person searchById(Long id) {
+	public Person searchById(Long id) throws NotFoundException, RuntimeException {
 		Person person = null;
 		Response response = null;
 		try {
@@ -50,20 +53,19 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 					.get();
 			
 			if (response == null) {
-				throw new RuntimeException("Ocorre um problema ao processar a requisição");
+				throw new RuntimeException("The was a problem processing your request.");
 			}
 			
 			if (response.getStatus() == 404) {
-				throw new NotFoundException("Não foi possível consultar pelo ID: " + id);
+				throw new NotFoundException("Person not found. ID: " + id);
 			}
 			
 			if (response.getStatus() == 200) {
 				person = response.readEntity(Person.class);
 			}
 			
-		} catch (Exception e) {
-			throw new ModelException("Não foi possível encontrar o ID: " + id, e);
-			//throw new RuntimeException(e);
+		} catch (NullPointerException | ProcessingException e) {
+			throw new RuntimeException(e);
 		} finally {
 			if (response != null) response.close();
 		}
@@ -71,36 +73,40 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 		return person;
 	}
 	
-	public Person searchByEmail(String email) {
-		Person person = null;
+	@Override
+	public Person searchByEmail(String email) throws NotFoundException, RuntimeException {
+		List<Person> persons = null;
 		Response response = null;
 		
 		try {
-			
-			// String filter = "?filter[where][and][0][email][regexp]=/" + email + "/i";
 			response = this.api.path("persons")
 					.queryParam("filter[where][and][0][email][regexp]","/" + email + "/i")
 					.request(MediaType.APPLICATION_JSON)
 					.get();
 			
-			if (response.getStatus() == 404) {
-				throw new NotFoundException("Não foi possível consultar pelo ID: ");
+			if (response == null) {
+				throw new RuntimeException("The was a problem processing your request.");
 			}
 			
 			if (response.getStatus() == 200) {
-				person = response.readEntity(Person.class);
+				persons = response.readEntity(new GenericType<List<Person>>() {});
 			}
 			
-		} catch (NotFoundException e) {
-			logger.info("Não foi possível encontrar o usuário de email: " + email);
+			if (persons.size() == 0) {
+				throw new NotFoundException("Person not found. E-mail: " + email);
+			}
 			
-		} catch (Exception e) {
-			throw new ModelException("Não foi possível encontrar o usuário de email: " + email, e);
+			if(persons.size() > 1) {
+				throw new RuntimeException("Multiples users with the same email.");
+			}
+			
+		} catch (NullPointerException | ProcessingException e) {
+			throw new RuntimeException(e);
 		} finally {
 			if (response != null) response.close();
 		}
 		
-		return person;
+		return persons.get(0);
 		
 	}
 
@@ -113,11 +119,10 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 	}
 
 	@Override
-	public void update(Person entity) {
+	public void update(Person entity) throws BadRequestException, RuntimeException {
 		Response response = null;
 		
 		try {
-			//service.updateParcialPerson(entity.getId(), entity);
 			response = this.api.path("persons/{id}")
 					.resolveTemplate("id", entity.getId().toString())
 					.request(MediaType.APPLICATION_JSON)
@@ -127,8 +132,8 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 			if (response.getStatus() != 200) {
 				throw new BadRequestException(response);
 			}
-		} catch(Exception e) {
-			throw new ModelException("Não foi possível atualizar o usuário de ID: " + entity.getId() , e);
+		} catch(NullPointerException | ProcessingException e) {
+			throw new RuntimeException("The was a problem processing your request. ID: " + entity.getId() , e);
 		} finally {
 			if (response != null) response.close();
 		}

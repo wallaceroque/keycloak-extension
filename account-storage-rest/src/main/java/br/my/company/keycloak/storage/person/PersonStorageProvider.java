@@ -15,6 +15,7 @@ import org.keycloak.credential.CredentialInputUpdater;
 import org.keycloak.credential.CredentialInputValidator;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.ModelDuplicateException;
 import org.keycloak.models.ModelException;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserCredentialModel;
@@ -130,16 +131,21 @@ public class PersonStorageProvider implements
         Person person = null;
     	try{            
     		person = identityStore.searchById(Long.valueOf(id));
+    		
+    		if (!person.isEnabled()) {
+    			//throw new ModelException("User not complete your registration");
+    			throw new ModelDuplicateException("User not complete your registration");
+    		}
     	} catch(NumberFormatException nfe) {
     		logger.error("PersonStorageProvider.getUserByUsername: Format's id is invalid! ID: " + id);
     		throw new ModelException("Format's id is invalid!", nfe);
     	} catch(NotFoundException nfe) {
     		logger.info("PersonStorageProvider.getUseByUsername: " + nfe.getMessage());
     		return null;
-    	} catch(RuntimeException re) {
+    	}/* catch(RuntimeException re) {
     		logger.error("PersonStorageProvider.getUserByUsername: " + re.getMessage());
     		throw new ModelException(re.getMessage());
-    	}
+    	}*/
     	            
         UserAdapter userAdapter = new UserAdapter(session, realm, model, this.identityStore, person);
         

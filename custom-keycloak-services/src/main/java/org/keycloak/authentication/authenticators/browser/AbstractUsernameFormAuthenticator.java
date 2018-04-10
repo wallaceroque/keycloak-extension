@@ -17,6 +17,12 @@
 
 package org.keycloak.authentication.authenticators.browser;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AbstractFormAuthenticator;
 import org.keycloak.authentication.AuthenticationFlowContext;
@@ -26,6 +32,7 @@ import org.keycloak.credential.hash.PasswordHashProvider;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
 import org.keycloak.models.ModelDuplicateException;
+import org.keycloak.models.ModelException;
 import org.keycloak.models.PasswordPolicy;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
@@ -34,11 +41,6 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.messages.Messages;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -107,6 +109,17 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
         }
 
     }
+    
+    public Response setUserIsNotRegistered(AuthenticationFlowContext context, UserModel user) {
+		dummyHash(context);
+		context.getEvent().error(Errors.USERNAME_MISSING);
+		Response challengeResponse = context.form()
+				.setError(Messages.REGISTRATION_NOT_ALLOWED).createLogin();
+		context.failureChallenge(AuthenticationFlowError.INVALID_USER, challengeResponse);
+		
+		return challengeResponse;
+    	
+    }
 
     public boolean invalidUser(AuthenticationFlowContext context, UserModel user) {
         if (user == null) {
@@ -153,6 +166,7 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
             user = KeycloakModelUtils.findUserByNameOrEmail(context.getSession(), context.getRealm(), username);
         } catch (ModelDuplicateException mde) {
             ServicesLogger.LOGGER.modelDuplicateException(mde);
+            logger.info("AbstractUsernameFormAuthenticator: catch ModelDuplicateException");
 
             // Could happen during federation import
             if (mde.getDuplicateFieldName() != null && mde.getDuplicateFieldName().equals(UserModel.EMAIL)) {
@@ -162,9 +176,14 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
             }
 
             return false;
+        } catch (ModelException me) {
+        	ServicesLogger.LOGGER.errorAuthenticating(me, me.getMessage());
+        	logger.info("AbstractUsernameFormAuthenticator: " + me.getMessage());
+        	setUserIsNotRegistered(context, user);
         }
 
         if (invalidUser(context, user)) {
+        	logger.info("AbstractUsernameFormAuthenticator: invalidUser");
             return false;
         }
 

@@ -9,13 +9,14 @@ import java.util.Set;
 import javax.ws.rs.NotFoundException;
 
 import org.jboss.logging.Logger;
+import org.keycloak.authentication.AuthenticationFlowError;
+import org.keycloak.authentication.AuthenticationFlowException;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
 import org.keycloak.credential.CredentialInputUpdater;
 import org.keycloak.credential.CredentialInputValidator;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.ModelDuplicateException;
 import org.keycloak.models.ModelException;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserCredentialModel;
@@ -133,8 +134,9 @@ public class PersonStorageProvider implements
     		person = identityStore.searchById(Long.valueOf(id));
     		
     		if (!person.isEnabled()) {
-    			//throw new ModelException("User not complete your registration");
-    			throw new ModelDuplicateException("User not complete your registration");
+    			throw new ModelException("User not complete your registration");
+    			//throw new ModelDuplicateException("User not complete your registration");
+    			//throw new AuthenticationFlowException("User not complete your registration", AuthenticationFlowError.USER_TEMPORARILY_DISABLED);
     		}
     	} catch(NumberFormatException nfe) {
     		logger.error("PersonStorageProvider.getUserByUsername: Format's id is invalid! ID: " + id);

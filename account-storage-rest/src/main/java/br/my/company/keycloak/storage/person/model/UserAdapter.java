@@ -17,15 +17,7 @@ import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 import br.my.company.keycloak.storage.rest.RESTIdentityStore;
 
 /**
- * TODO: Deve ser verificado se o Keycloak pode alterar o cpf e outros atributos do usuário ao utilizar this.entity.setCpf. 
- * Caso seja possível esse método deve lançar a exceção ReadOnlyException. Três situações devem ser verificadas:
- *    - Ao importar o usuário a primeira vez da base da Keycloak
- *    - Ao criar um usuário pela tela de gerenciamento de usuários
- *    - Na tela de gestão de contas do usuário
- */
-
-/**
- * Responsável por fazer o bind entre o objeto usuário do Keycloak e o objeto de domínio do negócio
+ * This class is responsible to match keycloak's user and business's object
  * @author <a href="mailto:wallacerock@gmail.com">Wallace Roque</a>
  * @version $Revision: 1 $
  */
@@ -87,26 +79,26 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
         return this.keycloakId;
     }
     
-    @Override
-    public boolean isEnabled() {
-    	return this.entity.isEnabled();
+//    @Override
+//    public boolean isEnabled() {
+//    	return this.entity.isEnabled();
         /*String val = getFirstAttribute(ENABLED_ATTRIBUTE);
         if (val == null) return true;
         else return Boolean.valueOf(val);
         */
-    }
+//    }
     
-    @Override
-    public void setEnabled(boolean enabled) {
-    	this.entity.setEnabled(enabled);
-    	try {
-    		this.identityStore.update(entity);
-    		//setSingleAttribute(ENABLED_ATTRIBUTE, Boolean.toString(enabled));    		
-    	} catch (Exception e) {
-    		//setSingleAttribute(ENABLED_ATTRIBUTE, getFirstAttribute(ENABLED_ATTRIBUTE));
-    		throw new ModelException(e.getMessage(), ENABLED_ATTRIBUTE);
-    	}
-    }
+//    @Override
+//    public void setEnabled(boolean enabled) {
+//    	this.entity.setEnabled(enabled);
+//    	try {
+//    		this.identityStore.update(entity);
+//    		//setSingleAttribute(ENABLED_ATTRIBUTE, Boolean.toString(enabled));    		
+//    	} catch (Exception e) {
+//    		//setSingleAttribute(ENABLED_ATTRIBUTE, getFirstAttribute(ENABLED_ATTRIBUTE));
+//    		throw new ModelException(e.getMessage(), ENABLED_ATTRIBUTE);
+//    	}
+//    }
     
     @Override
     public String getFirstName() {

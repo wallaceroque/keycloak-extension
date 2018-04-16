@@ -17,10 +17,14 @@ Since the workspace is mapped to the volume docker, run:
 ```bash
 
 # Copy jar to keycloak services module
-docker exec -it keycloak-server cp workspace/custom-keycloak-services/target/custom-keycloak-services-3.4.3.Final.jar keycloak/modules/system/layers/keycloak/org/keycloak/keycloak-services/main/
+docker exec -it keycloak-server cp workspace/custom-keycloak-services/target/custom-keycloak-services-3.4.3.Final-0.0.1-SNAPSHOT.jar keycloak/modules/system/layers/keycloak/org/keycloak/keycloak-services/main/
 ```
 
 Edit module.xml store in `keycloak/modules/system/layers/keycloak/org/keycloak/keycloak-services/main/` 
+
+```bash
+docker exec -it keycloak-server vi keycloak/modules/system/layers/keycloak/org/keycloak/keycloak-services/main/module.xml
+```
 
 ```xml
 ...
@@ -30,7 +34,7 @@ Edit module.xml store in `keycloak/modules/system/layers/keycloak/org/keycloak/k
     </properties>
 
     <resources>
-        <resource-root path="custom-keycloak-services-3.4.3.Final.jar"/>
+        <resource-root path="custom-keycloak-services-3.4.3.Final-0.0.1-SNAPSHOT.jar"/>
     </resources>
 ...
 ```

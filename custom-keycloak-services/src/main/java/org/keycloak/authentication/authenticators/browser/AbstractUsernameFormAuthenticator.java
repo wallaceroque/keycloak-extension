@@ -110,12 +110,13 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
 
     }
     
-    public Response setUserIsNotRegistered(AuthenticationFlowContext context, UserModel user) {
+    public Response setUserStorageProviderError(AuthenticationFlowContext context, UserModel user, String error, String message, AuthenticationFlowError flowError) {
 		dummyHash(context);
-		context.getEvent().error(Errors.USERNAME_MISSING);
+		context.getEvent().error(error);
 		Response challengeResponse = context.form()
-				.setError(Messages.REGISTRATION_NOT_ALLOWED).createLogin();
-		context.failureChallenge(AuthenticationFlowError.INVALID_USER, challengeResponse);
+				.setError(message).createLogin();
+		//context.failureChallenge(AuthenticationFlowError.INVALID_USER, challengeResponse);
+		context.forceChallenge(challengeResponse);
 		
 		return challengeResponse;
     	
@@ -166,7 +167,6 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
             user = KeycloakModelUtils.findUserByNameOrEmail(context.getSession(), context.getRealm(), username);
         } catch (ModelDuplicateException mde) {
             ServicesLogger.LOGGER.modelDuplicateException(mde);
-            logger.info("AbstractUsernameFormAuthenticator: catch ModelDuplicateException");
 
             // Could happen during federation import
             if (mde.getDuplicateFieldName() != null && mde.getDuplicateFieldName().equals(UserModel.EMAIL)) {
@@ -177,13 +177,14 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
 
             return false;
         } catch (ModelException me) {
-        	ServicesLogger.LOGGER.errorAuthenticating(me, me.getMessage());
-        	logger.info("AbstractUsernameFormAuthenticator: " + me.getMessage());
-        	setUserIsNotRegistered(context, user);
+        	ServicesLogger.LOGGER.failedAuthentication(me.getCause());
+        	logger.info("AbstractUsernameFormAuthenticator: " + me.getCause().getMessage());
+        	setUserStorageProviderError(context, user, me.getCause().getMessage(), me.getMessage(), AuthenticationFlowError.IDENTITY_PROVIDER_ERROR);
+        	
+        	return false;
         }
 
         if (invalidUser(context, user)) {
-        	logger.info("AbstractUsernameFormAuthenticator: invalidUser");
             return false;
         }
 

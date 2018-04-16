@@ -9,13 +9,12 @@ import java.util.Set;
 import javax.ws.rs.NotFoundException;
 
 import org.jboss.logging.Logger;
-import org.keycloak.authentication.AuthenticationFlowError;
-import org.keycloak.authentication.AuthenticationFlowException;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
 import org.keycloak.credential.CredentialInputUpdater;
 import org.keycloak.credential.CredentialInputValidator;
 import org.keycloak.credential.CredentialModel;
+import org.keycloak.events.Errors;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ModelException;
 import org.keycloak.models.RealmModel;
@@ -26,6 +25,7 @@ import org.keycloak.models.cache.CachedUserModel;
 import org.keycloak.models.credential.PasswordUserCredentialModel;
 import org.keycloak.policy.PasswordPolicyManagerProvider;
 import org.keycloak.policy.PolicyError;
+import org.keycloak.services.messages.Messages;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
@@ -133,21 +133,28 @@ public class PersonStorageProvider implements
     	try{            
     		person = identityStore.searchById(Long.valueOf(id));
     		
+    		if (person == null) return null;
+    		
     		if (!person.isEnabled()) {
-    			throw new ModelException("User not complete your registration");
-    			//throw new ModelDuplicateException("User not complete your registration");
-    			//throw new AuthenticationFlowException("User not complete your registration", AuthenticationFlowError.USER_TEMPORARILY_DISABLED);
+    			RuntimeException wrapper = new RuntimeException(Errors.INVALID_USER_CREDENTIALS, new IllegalStateException("User not complete your registration"));
+    			throw new ModelException(
+    					Messages.USER_NOT_COMPLETE_REGISTRATION, wrapper);
     		}
+    		
     	} catch(NumberFormatException nfe) {
     		logger.error("PersonStorageProvider.getUserByUsername: Format's id is invalid! ID: " + id);
-    		throw new ModelException("Format's id is invalid!", nfe);
-    	} catch(NotFoundException nfe) {
-    		logger.info("PersonStorageProvider.getUseByUsername: " + nfe.getMessage());
-    		return null;
-    	}/* catch(RuntimeException re) {
-    		logger.error("PersonStorageProvider.getUserByUsername: " + re.getMessage());
-    		throw new ModelException(re.getMessage());
-    	}*/
+    		RuntimeException wrapper = new RuntimeException(Errors.INVALID_FORM, nfe);
+    		throw new ModelException(Messages.INVALID_USER, wrapper);
+//    		throw new UserStorageException(
+//					Errors.INVALID_FORM, 
+//					"Format ID is invalid.",
+//					Messages.COULD_NOT_PROCEED_WITH_AUTHENTICATION_REQUEST,
+//					"credentials are in an unexpected format");
+    		
+    	}  catch(ModelException me) {
+    		logger.error("Throw UserStorageProviderException!", me);
+    		throw me;
+    	}
     	            
         UserAdapter userAdapter = new UserAdapter(session, realm, model, this.identityStore, person);
         
@@ -229,7 +236,7 @@ public class PersonStorageProvider implements
 
 	@Override
 	public Set<String> getDisableableCredentialTypes(RealmModel realm, UserModel user) {
-		return Collections.EMPTY_SET;
+		return Collections.emptySet();
 	}
 
 	/**
@@ -256,17 +263,12 @@ public class PersonStorageProvider implements
 	        	user.removeRequiredAction(RequiredAction.UPDATE_PASSWORD);
 	        	logger.info("PersonStorageProvider.updateCredential: RequiredAction.UPDATE_PASSWORD removed");
 	        }
-	        logger.info("updateCredential: Senha alterada com sucesso!");
+	        logger.info("updateCredential: Change password with success!");
 	        return true;
 	    } catch (ModelException me) {
-	    	logger.info("updateCredential: Falha ao alterar a senha: ", me);
+	    	logger.info("updateCredential: Change password failed ", me);
 	    	throw me;
 	    }
-	}
-	
-	private boolean validPassword(RealmModel realm, UserModel user, String value) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 	
 	private void forceUpdatePasswordInNextLogin(RealmModel realm, UserModel userAdapter) {

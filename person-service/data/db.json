@@ -14,7 +14,7 @@
     "RoleMapping": {},
     "Role": {},
     "Person": {
-      "111": "{\"id\":111,\"password\":\"12341234@\",\"name\":\"Irleide Moraes dos Santos\",\"email\":\"irleide@gmail.com\",\"telephone\":\"(21)983375116\",\"isMustChangePassword\":false,\"isEnabled\":true}",
+      "111": "{\"id\":111,\"password\":\"321321@\",\"name\":\"Irleide Moraes dos Santos\",\"email\":\"irleide@gmail.com\",\"telephone\":\"(21)983375116\",\"isMustChangePassword\":false,\"isEnabled\":true}",
       "222": "{\"id\":222,\"password\":\"321321\",\"name\":\"Wallace Roque de Figueiredo\",\"email\":\"wallacerock@gmail.com\",\"telephone\":\"(21)969068767\",\"isMustChangePassword\":true,\"isEnabled\":false}"
     }
   }

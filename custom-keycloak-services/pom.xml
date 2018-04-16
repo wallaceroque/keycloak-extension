@@ -186,7 +186,7 @@
         </dependency>
     </dependencies>
     <build>
-    	<finalName>custom-keycloak-services-3.4.3.Final</finalName>
+    	<finalName>custom-keycloak-services-3.4.3.Final-0.0.1-SNAPSHOT</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

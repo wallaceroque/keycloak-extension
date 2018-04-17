@@ -145,11 +145,6 @@ public class PersonStorageProvider implements
     		logger.error("PersonStorageProvider.getUserByUsername: Format's id is invalid! ID: " + id);
     		RuntimeException wrapper = new RuntimeException(Errors.INVALID_FORM, nfe);
     		throw new ModelException(Messages.INVALID_USER, wrapper);
-//    		throw new UserStorageException(
-//					Errors.INVALID_FORM, 
-//					"Format ID is invalid.",
-//					Messages.COULD_NOT_PROCEED_WITH_AUTHENTICATION_REQUEST,
-//					"credentials are in an unexpected format");
     		
     	}  catch(ModelException me) {
     		logger.error("Throw UserStorageProviderException!", me);
@@ -180,19 +175,17 @@ public class PersonStorageProvider implements
     	try {
     		person = identityStore.searchByEmail(email);
     		
-    	} catch (NotFoundException nfe) {
-			return null;
-		} catch(Exception e) {
-			throw e;
-		}
+    		if (person == null) return null;
+    		
+    	} catch(ModelException me) {
+    		logger.error("Throw UserStorageProviderException!", me);
+    		throw me;
+    	}
          
         UserAdapter adapter = new UserAdapter(session, realm, model, this.identityStore, person);
-         
-        //userManager.setManagedProxiedUser(adapter, person);
 
         return adapter;
 	}
-    
     
     // CredentialInputValidator
     

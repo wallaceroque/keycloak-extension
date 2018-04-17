@@ -348,6 +348,9 @@ public class AccountFormService extends AbstractSecuredLocalService {
         } catch (ModelDuplicateException mde) {
             setReferrerOnPage();
             return account.setError(Response.Status.CONFLICT, mde.getMessage()).setProfileFormData(formData).createResponse(AccountPages.ACCOUNT);
+        } catch (ModelException me) {
+        	setReferrerOnPage();
+        	return account.setError(Response.Status.BAD_GATEWAY, me.getMessage()).setProfileFormData(formData).createResponse(AccountPages.ACCOUNT);
         }
     }
 

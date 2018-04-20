@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "error", propOrder = { "cpf" })
+@XmlType(name = "error", propOrder = { "statusCode" })
 @JsonRootName("error")
-public class Error {
+public class ErrorResponse {
 	
 	private Integer statusCode;
 	private String name;

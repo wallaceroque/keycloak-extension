@@ -7,7 +7,7 @@ services:
     build:
       context: .
     container_name: keycloak-server
-    command: ["-b", "0.0.0.0","-bmanagement","0.0.0.0","-Dkeycloak.import=/opt/jboss/keycloak/realms/pessoa.json"]
+    command: ["-b", "0.0.0.0","-bmanagement","0.0.0.0","-Dkeycloak.import=/opt/jboss/keycloak/realms/person.json"]
     environment:
       JBOSS_USER: jboss
       JBOSS_PASSWORD: jboss00#

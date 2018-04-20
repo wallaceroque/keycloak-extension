@@ -6,13 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.NotFoundException;
+
 import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
 import org.keycloak.credential.CredentialInputUpdater;
 import org.keycloak.credential.CredentialInputValidator;
 import org.keycloak.credential.CredentialModel;
-import org.keycloak.models.FederatedIdentityModel;
+import org.keycloak.events.Errors;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ModelException;
 import org.keycloak.models.RealmModel;
@@ -23,6 +25,7 @@ import org.keycloak.models.cache.CachedUserModel;
 import org.keycloak.models.credential.PasswordUserCredentialModel;
 import org.keycloak.policy.PasswordPolicyManagerProvider;
 import org.keycloak.policy.PolicyError;
+import org.keycloak.services.messages.Messages;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
@@ -56,7 +59,7 @@ public class PersonStorageProvider implements
     //protected CidadaoService service;
     //protected PasswordUpdateCallback updater;
     //protected LDAPStorageMapperManager mapperManager;
-    protected CidadaoStorageUserManager userManager;
+    protected PersonStorageUserManager userManager;
     
     protected final Set<String> supportedCredentialTypes = new HashSet<>();
     
@@ -67,7 +70,7 @@ public class PersonStorageProvider implements
         this.model = model;
         this.identityStore = identityStore;
         //this.mapperManager = new LDAPStorageMapperManager(this);
-        this.userManager = new CidadaoStorageUserManager(this);
+        this.userManager = new PersonStorageUserManager(this);
 
         supportedCredentialTypes.add(UserCredentialModel.PASSWORD);
     }
@@ -90,7 +93,7 @@ public class PersonStorageProvider implements
     //// UserLookupProvider
     
     @Override
-	public UserModel getUserById(String keycloakId, RealmModel realm) {
+	public UserModel getUserById(String keycloakId, RealmModel realm) throws ModelException {
     	logger.info("getUserById: keycloakId " + keycloakId);
     	/*UserModel alreadyLoadedInSession = userManager.getManagedProxiedUser(keycloakId);
         if (alreadyLoadedInSession != null) {
@@ -103,90 +106,86 @@ public class PersonStorageProvider implements
 	}
     
     @Override
-	public UserModel getUserByUsername(String id, RealmModel realm) {
-    	logger.info("getUserByUsername: id: " + id);
-    	logger.info("getUserByUsername: count local storage: " + session.userLocalStorage().getUsersCount(realm));
-    	logger.info("getUserByUsername: count federated storage: " + session.userFederatedStorage().getStoredUsersCount(realm));
-    	Set<FederatedIdentityModel> models = session.userFederatedStorage().getFederatedIdentities(new StorageId(id).getId(), realm);
-    	logger.info("getUserByUsername: count federated identity model stored: " + models.size());
+	public UserModel getUserByUsername(String id, RealmModel realm) throws ModelException {
+    	logger.info("PersonStorageProvider.getUserByUsername: id: " + id);
+//    	logger.info("PersonStorageProvider.getUserByUsername: count local storage: " + session.userLocalStorage().getUsersCount(realm));
+    	logger.info("PersonStorageProvider.getUserByUsername: count federated storage: " + session.userFederatedStorage().getStoredUsersCount(realm));
+//    	Set<FederatedIdentityModel> models = session.userFederatedStorage().getFederatedIdentities(new StorageId(id).getId(), realm);
+//    	logger.info("PersonStorageProvider.getUserByUsername: count federated identity model stored: " + models.size());
     	
-    	try{
-    		List<UserModel> users = session.userLocalStorage().getUsers(realm);
-            users.forEach(user -> 
-            	logger.info("getUserByUsername: user from local storage: id: " + 
-            			user.getId() + " username: " + user.getUsername()));
-            
-            List<String> federatedStoredUsers = session.userFederatedStorage().getStoredUsers(realm, 0, 5);
-            
-            federatedStoredUsers.forEach(user -> {
-            	logger.info("getUserByUsername: user from federated storage: " + user);
-	            session.userFederatedStorage()
-	        		.getRequiredActions(realm, new StorageId(id).getId())
-	        		.forEach(requiredAction -> 
-	        			logger.info("getUserByUsername: required action from federated storage: " + requiredAction));
-	            });
-            
-            ///////////////////////////////////////////////////////////
-            
-            Person person = identityStore.searchById(Long.valueOf(id));
-            if (person == null) {
-                return null;
-            }
-            
-            //UserModel userModel = session.userLocalStorage().getUserByUsername(id, realm);
-            
-            UserAdapter userAdapter = new UserAdapter(session, realm, model, this.identityStore, person);
-            
-            if (userAdapter.isEnabled()) {
-            	logger.info("getUserByUsername: keycloakId: " + userAdapter.getId());
-            	//session.userLocalStorage().addUser(realm, id);
-            	if (person.isPrimeiroLogin()) {
-            		Set<String> actions = session.userFederatedStorage().getRequiredActions(realm, userAdapter.getId());
-            		
-            		actions.forEach(action -> logger.info("getUserByUsername: " + action));
-            		
-            		if (actions.contains(RequiredAction.UPDATE_PASSWORD.toString())){
-            			logger.info("getUserByUsername: Required Action já está associada ao usuário.");
-            			session.userFederatedStorage().removeRequiredAction(realm, userAdapter.getId(), RequiredAction.UPDATE_PASSWORD.toString());            			
-            		}
-            		
-            		userAdapter.addRequiredAction(RequiredAction.UPDATE_PASSWORD);
-            		
-            	}
-            	//userAdapter.removeRequiredAction(RequiredAction.UPDATE_PASSWORD);
-            	//session.authenticationSessions().close();
-            }
-            
-            //userManager.setManagedProxiedUser(adapter, person);
-
-            return userAdapter;
+//		List<UserModel> users = session.userLocalStorage().getUsers(realm);
+//        users.forEach(user -> 
+//        	logger.info("PersonStorageProvider.getUserByUsername: user from local storage: id: " + 
+//        			user.getId() + " username: " + user.getUsername()));
+        
+        List<String> federatedStoredUsers = session.userFederatedStorage().getStoredUsers(realm, 0, 5);
+        
+        federatedStoredUsers.forEach(user -> {
+        	logger.info("PersonStorageProvider.getUserByUsername: user from federated storage: " + user);
+            session.userFederatedStorage()
+        		.getRequiredActions(realm, user)
+        		.forEach(requiredAction -> 
+        			logger.info("PersonStorageProvider.getUserByUsername: required action from federated storage: " + requiredAction));
+            });
+    	
+        ///////////////////////////////////////////////////////////
+        Person person = null;
+    	try{            
+    		person = identityStore.searchById(Long.valueOf(id));
     		
-    	} catch(ModelException re) {
-    		logger.error("Um erro aconteceu e nada será feito: " + re.getMessage());
-    		throw new RuntimeException("Lançada uma exceção", re);
-    		//return null;
+    		if (person == null) return null;
+    		
+    		if (!person.isEnabled()) {
+    			RuntimeException wrapper = new RuntimeException(Errors.INVALID_USER_CREDENTIALS, new IllegalStateException("User not complete your registration"));
+    			throw new ModelException(
+    					Messages.USER_NOT_COMPLETE_REGISTRATION, wrapper);
+    		}
+    		
+    	} catch(NumberFormatException nfe) {
+    		logger.error("PersonStorageProvider.getUserByUsername: Format's id is invalid! ID: " + id);
+    		RuntimeException wrapper = new RuntimeException(Errors.INVALID_FORM, nfe);
+    		throw new ModelException(Messages.INVALID_USER, wrapper);
+    		
+    	}  catch(ModelException me) {
+    		logger.error("Throw UserStorageProviderException!", me);
+    		throw me;
     	}
+    	            
+        UserAdapter userAdapter = new UserAdapter(session, realm, model, this.identityStore, person);
+        
+        if (userAdapter.isEnabled()) {
+        	if (person.isMustChangePassword()) {
+        		this.forceUpdatePasswordInNextLogin(realm, userAdapter);
+        	}
+        } else {
+        	session.authenticationSessions().close();
+        }
+        
+        //userManager.setManagedProxiedUser(adapter, person);
+
+        return userAdapter;
     	
 	}
     
     @Override
 	public UserModel getUserByEmail(String email, RealmModel realm) {
-    	logger.info("getUserByEmail: email: " + email);
-    	Person person = identityStore.searchByEmail(email);
+    	logger.info("PersonStorageProvider.getUserByEmail: email: " + email);
+    	Person person = null;
     	
-         if (person == null) {
-             return null;
-         }
+    	try {
+    		person = identityStore.searchByEmail(email);
+    		
+    		if (person == null) return null;
+    		
+    	} catch(ModelException me) {
+    		logger.error("Throw UserStorageProviderException!", me);
+    		throw me;
+    	}
          
-         UserAdapter adapter = new UserAdapter(session, realm, model, this.identityStore, person);
-         
-         //userManager.setManagedProxiedUser(adapter, person);
+        UserAdapter adapter = new UserAdapter(session, realm, model, this.identityStore, person);
 
-         return adapter;
-
-         //return new UserAdapter(session, realm, model, person);
+        return adapter;
 	}
-    
     
     // CredentialInputValidator
     
@@ -197,18 +196,22 @@ public class PersonStorageProvider implements
 
 	@Override
 	public boolean isValid(RealmModel realm, UserModel user, CredentialInput input) {
+		logger.info("PersonStorageProvider.isValid: UserModel.getId() -> " + user.getId());
 		if (!supportsCredentialType(input.getType()) || !(input instanceof UserCredentialModel)) return false;
-		logger.info("isValid: UserModel.getId() -> " + user.getId());
-        //UserAdapter adapter = (UserAdapter)getUserByUsername(StorageId.externalId(user.getId()), realm);
+//        UserAdapter userAdapter = (UserAdapter)getUserByUsername(StorageId.externalId(user.getId()), realm);
 		Person person = identityStore.searchById(Long.valueOf((StorageId.externalId(user.getId()))));
 
         //String password = getPassword(adapter);
-		String password = person.getSenha();
+		String password = person.getPassword();
         UserCredentialModel cred = (UserCredentialModel)input;
+        logger.info("PersonStorageProvider.isValid: input -> " + cred.getValue() + " user password -> " + password);
         PolicyError error = session.getProvider(PasswordPolicyManagerProvider.class).validate(realm, user, password);
-        logger.info("isValid: input -> " + cred.getValue() + " user password -> " + password);
-        logger.info("isValid: error: " + error);
-        return password != null && password.equals(cred.getValue()) && error == null;
+        if (error != null) {
+        	logger.info("PersonStorageProvider.isValid: error: " + error);
+        	this.forceUpdatePasswordInNextLogin(realm, user);
+        }
+        
+        return password != null && password.equals(cred.getValue());
 	}
 
 	@Override
@@ -226,7 +229,7 @@ public class PersonStorageProvider implements
 
 	@Override
 	public Set<String> getDisableableCredentialTypes(RealmModel realm, UserModel user) {
-		return Collections.EMPTY_SET;
+		return Collections.emptySet();
 	}
 
 	/**
@@ -244,22 +247,36 @@ public class PersonStorageProvider implements
 	    
         try {
         	Person person = identityStore.searchById(Long.valueOf((StorageId.externalId(user.getId()))));
-	        person.setSenha(password);
-	        person.setPrimeiroLogin(false);
+	        person.setPassword(password);
 	        
 	        identityStore.update(person);
 	        
-	        logger.info("updateCredential: Senha alterada com sucesso!" );	
+	        // Remove required action UPDATE_PASSWORD when user is forced to change
+	        if (user.getRequiredActions().contains(RequiredAction.UPDATE_PASSWORD.toString())) {
+	        	user.removeRequiredAction(RequiredAction.UPDATE_PASSWORD);
+	        	logger.info("PersonStorageProvider.updateCredential: RequiredAction.UPDATE_PASSWORD removed");
+	        }
+	        logger.info("updateCredential: Change password with success!");
 	        return true;
 	    } catch (ModelException me) {
-	    	logger.info("updateCredential: Falha ao alterar a senha: ", me);
+	    	logger.info("updateCredential: Change password failed ", me);
 	    	throw me;
 	    }
 	}
 	
-	private boolean validPassword(RealmModel realm, UserModel user, String value) {
-		// TODO Auto-generated method stub
-		return false;
+	private void forceUpdatePasswordInNextLogin(RealmModel realm, UserModel userAdapter) {
+		Set<String> actions = userAdapter.getRequiredActions();
+		
+		actions.forEach(action -> logger.info("PersonStorageProvider.getUserByUsername: " + action));
+		
+		if (actions.contains(RequiredAction.UPDATE_PASSWORD.toString())){
+			logger.info("PersonStorageProvider.forceUpdatePasswordInNextLogin: Required Action is already associated with the user.");
+			logger.info("PersonStorageProvider.forceUpdatePasswordInNextLogin: Removing existing RequiredAction.UPDATE_PASSWORD");
+			userAdapter.removeRequiredAction(RequiredAction.UPDATE_PASSWORD);
+		}
+		userAdapter.addRequiredAction(RequiredAction.UPDATE_PASSWORD);
+		logger.info("PersonStorageProvider.getUserByUsername: RequiredAction.UPDATE_PASSWORD added!!");
+		session.userCache().evict(realm, userAdapter);
 	}
 	
 	public Set<String> getSupportedCredentialTypes() {

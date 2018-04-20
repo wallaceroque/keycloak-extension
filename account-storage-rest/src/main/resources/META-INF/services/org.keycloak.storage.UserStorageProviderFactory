@@ -1,1 +1,1 @@
-br.gov.dataprev.keycloak.storage.cidadao.CidadaoStorageProviderFactory
+br.my.company.keycloak.storage.person.PersonStorageProviderFactory

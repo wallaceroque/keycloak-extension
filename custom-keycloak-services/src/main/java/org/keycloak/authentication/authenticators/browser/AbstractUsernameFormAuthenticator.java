@@ -17,6 +17,12 @@
 
 package org.keycloak.authentication.authenticators.browser;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AbstractFormAuthenticator;
 import org.keycloak.authentication.AuthenticationFlowContext;
@@ -26,6 +32,7 @@ import org.keycloak.credential.hash.PasswordHashProvider;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
 import org.keycloak.models.ModelDuplicateException;
+import org.keycloak.models.ModelException;
 import org.keycloak.models.PasswordPolicy;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
@@ -34,11 +41,6 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.messages.Messages;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -107,6 +109,18 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
         }
 
     }
+    
+    public Response setUserStorageProviderError(AuthenticationFlowContext context, UserModel user, String error, String message, AuthenticationFlowError flowError) {
+		dummyHash(context);
+		context.getEvent().error(error);
+		Response challengeResponse = context.form()
+				.setError(message).createLogin();
+		//context.failureChallenge(AuthenticationFlowError.INVALID_USER, challengeResponse);
+		context.forceChallenge(challengeResponse);
+		
+		return challengeResponse;
+    	
+    }
 
     public boolean invalidUser(AuthenticationFlowContext context, UserModel user) {
         if (user == null) {
@@ -162,6 +176,12 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
             }
 
             return false;
+        } catch (ModelException me) {
+        	ServicesLogger.LOGGER.failedAuthentication(me.getCause());
+        	logger.info("AbstractUsernameFormAuthenticator: " + me.getCause().getMessage());
+        	setUserStorageProviderError(context, user, me.getCause().getMessage(), me.getMessage(), AuthenticationFlowError.IDENTITY_PROVIDER_ERROR);
+        	
+        	return false;
         }
 
         if (invalidUser(context, user)) {

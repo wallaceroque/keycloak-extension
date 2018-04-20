@@ -16,11 +16,12 @@ public class Person implements Entity {
     
     private Long id;
 
-    private String nome;
+    private String name;
     private String email;
-    private String senha;
-    private String telefone;
-    private boolean isPrimeiroLogin;
+    private String password;
+    private String telephone;
+    private boolean isEnabled;
+    private boolean isMustChangePassword;
 
     public Long getId() {
         return id;
@@ -30,12 +31,12 @@ public class Person implements Entity {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getName() {
+        return name;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -46,39 +47,44 @@ public class Person implements Entity {
         this.email = email;
     }
 
-    public String getSenha() {
-        return senha;
+    public String getPassword() {
+        return password;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getTelefone() {
-        return telefone;
+    public String getTelephone() {
+        return telephone;
     }
 
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
     
-    public boolean isPrimeiroLogin() {
-    	return this.isPrimeiroLogin;
-    }
-    
-    public void setPrimeiroLogin(boolean isPrimeiroLogin) {
-    	this.isPrimeiroLogin = isPrimeiroLogin;
+    public boolean isEnabled() {
+		return isEnabled;
+	}
+
+	public void setEnabled(boolean isEnabled) {
+		this.isEnabled = isEnabled;
+	}
+
+	public boolean isMustChangePassword() {
+    	return this.isMustChangePassword;
     }
     
     @Override
     public String toString() {
     	return "{"
     			+ "\"id\":" + getId()
-    			+ "\"senha\":" + getSenha()
-    			+ "\"nome\":" + getNome()
+    			+ "\"password\":" + getPassword()
+    			+ "\"name\":" + getName()
     			+ "\"email\":" + getEmail()
-    			+ "\"telefone\":" + getTelefone()
-    			+ "\"isPrimeiroLogin\":" + isPrimeiroLogin()
+    			+ "\"telephone\":" + getTelephone()
+    			+ "\"isEnabled\":" + isEnabled()
+    			+ "\"isMustChangePassword\":" + isMustChangePassword()
     			+ "}";
     }
 }

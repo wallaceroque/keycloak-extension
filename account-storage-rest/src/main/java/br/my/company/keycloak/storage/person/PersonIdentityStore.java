@@ -1,23 +1,34 @@
 package br.my.company.keycloak.storage.person;
 
+import java.util.List;
+
 import javax.naming.AuthenticationException;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.ServerErrorException;
+import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.jboss.logging.Logger;
+import org.keycloak.events.Errors;
 import org.keycloak.models.ModelException;
+import org.keycloak.services.messages.Messages;
 
 import br.my.company.keycloak.storage.person.model.Person;
 import br.my.company.keycloak.storage.rest.RESTConfig;
 import br.my.company.keycloak.storage.rest.RESTIdentityStore;
+import br.my.company.keycloak.storage.rest.model.ErrorResponse;
 
+// TODO: Refactor treatment exception.
 public class PersonIdentityStore implements RESTIdentityStore<Person> {
 	
 	private static final Logger logger = Logger.getLogger(PersonIdentityStore.class);
@@ -43,27 +54,41 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 	public Person searchById(Long id) {
 		Person person = null;
 		Response response = null;
+		
 		try {
 			response = this.api.path("persons/{id}")
 					.resolveTemplate("id", id.toString())
 					.request(MediaType.APPLICATION_JSON)
-					.get();
+					.get();			
+			response.bufferEntity();
 			
-			if (response == null) {
-				throw new RuntimeException("Ocorre um problema ao processar a requisição");
-			}
+			person = response.readEntity(Person.class);
+		
+		} catch (NullPointerException | BadRequestException | ProcessingException e) {
+			logger.error("We were unable to process your request.", e);
+			RuntimeException wrapper = new RuntimeException(Errors.INVALID_REQUEST, e);
+			throw new ModelException(Messages.COULD_NOT_PROCEED_WITH_AUTHENTICATION_REQUEST, wrapper);
 			
-			if (response.getStatus() == 404) {
-				throw new NotFoundException("Não foi possível consultar pelo ID: " + id);
-			}
+		} catch (NotFoundException nfe) {
+			logger.warn("Person not found. ID: " + id, nfe);
+			return null;
 			
-			if (response.getStatus() == 200) {
-				person = response.readEntity(Person.class);
-			}
+		} catch (ClientErrorException cee) {
+			logger.error("The user storage provider was unable to process request. Status code: " + response.getStatus(), cee);
+			ErrorResponse error = response.readEntity(ErrorResponse.class);
+			RuntimeException wrapper = new RuntimeException(error.getMessage(), cee);
+			throw new ModelException(Messages.USER_STORAGE_PROVIDER_LOGIN_FAILURE, wrapper);
 			
-		} catch (Exception e) {
-			throw new ModelException("Não foi possível encontrar o ID: " + id, e);
-			//throw new RuntimeException(e);
+		} catch (ServiceUnavailableException sue) {
+			logger.error("The servers are unavailable: " + sue.getMessage(), sue);
+			RuntimeException wrapper = new RuntimeException(Errors.IDENTITY_PROVIDER_ERROR, sue);
+			throw new ModelException(Messages.USER_STORAGE_PROVIDER_UNAVAILABLE, wrapper);
+		
+		} catch (ServerErrorException see) {
+			logger.error("I'm sorry, an unexpected error occurred. We are working to resolve it.", see);
+			RuntimeException wrapper = new RuntimeException(Errors.IDENTITY_PROVIDER_ERROR, see);
+			throw new ModelException(Messages.USER_STORAGE_PROVIDER_UNEXPECTED_ERROR, wrapper);
+			
 		} finally {
 			if (response != null) response.close();
 		}
@@ -71,36 +96,61 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 		return person;
 	}
 	
-	public Person searchByEmail(String email) {
-		Person person = null;
+	@Override
+	public Person searchByEmail(String email) throws NotFoundException, RuntimeException {
+		List<Person> persons = null;
 		Response response = null;
 		
 		try {
-			
-			// String filter = "?filter[where][and][0][email][regexp]=/" + email + "/i";
 			response = this.api.path("persons")
 					.queryParam("filter[where][and][0][email][regexp]","/" + email + "/i")
 					.request(MediaType.APPLICATION_JSON)
 					.get();
+			response.bufferEntity();
 			
-			if (response.getStatus() == 404) {
-				throw new NotFoundException("Não foi possível consultar pelo ID: ");
+			persons = response.readEntity(new GenericType<List<Person>>() {});
+			
+			if (persons.size() == 0) {
+				logger.warn("Person not found. E-mail: " + email);
+				return null;
 			}
 			
-			if (response.getStatus() == 200) {
-				person = response.readEntity(Person.class);
+			if(persons.size() > 1) {
+				logger.warn("Multiples users with the same email.");
+				// RuntimeException wrapper = new RuntimeException(Errors.EMAIL_IN_USE);
+				// throw new ModelException(Messages.EMAIL_EXISTS, wrapper);
 			}
 			
-		} catch (NotFoundException e) {
-			logger.info("Não foi possível encontrar o usuário de email: " + email);
+		} catch (NullPointerException | BadRequestException | ProcessingException e) {
+			logger.error("We were unable to process your request.", e);
+			RuntimeException wrapper = new RuntimeException(Errors.INVALID_REQUEST, e);
+			throw new ModelException(Messages.COULD_NOT_PROCEED_WITH_AUTHENTICATION_REQUEST, wrapper);
 			
-		} catch (Exception e) {
-			throw new ModelException("Não foi possível encontrar o usuário de email: " + email, e);
+		} catch (NotFoundException nfe) {
+			logger.warn("person not found by e-mail informed: " + email, nfe);
+			return null;
+			
+		} catch (ClientErrorException cee) {
+			logger.error("The user storage provider was unable to process request. Status code: " + response.getStatus(), cee);
+			ErrorResponse error = response.readEntity(ErrorResponse.class);
+			RuntimeException wrapper = new RuntimeException(error.getMessage(), cee);
+			throw new ModelException(Messages.USER_STORAGE_PROVIDER_LOGIN_FAILURE, wrapper);
+			
+		} catch (ServiceUnavailableException sue) {
+			logger.error("The servers are unavailable: " + sue.getMessage(), sue);
+			RuntimeException wrapper = new RuntimeException(Errors.IDENTITY_PROVIDER_ERROR, sue);
+			throw new ModelException(Messages.USER_STORAGE_PROVIDER_UNAVAILABLE, wrapper);
+		
+		} catch (ServerErrorException see) {
+			logger.error("I'm sorry, an unexpected error occurred. We are working to resolve it.", see);
+			RuntimeException wrapper = new RuntimeException(Errors.IDENTITY_PROVIDER_ERROR, see);
+			throw new ModelException(Messages.USER_STORAGE_PROVIDER_UNEXPECTED_ERROR, wrapper);
+			
 		} finally {
 			if (response != null) response.close();
 		}
 		
-		return person;
+		return persons.get(0);
 		
 	}
 
@@ -113,11 +163,10 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 	}
 
 	@Override
-	public void update(Person entity) {
+	public void update(Person entity) throws BadRequestException, RuntimeException {
 		Response response = null;
 		
 		try {
-			//service.updateParcialPerson(entity.getId(), entity);
 			response = this.api.path("persons/{id}")
 					.resolveTemplate("id", entity.getId().toString())
 					.request(MediaType.APPLICATION_JSON)
@@ -127,8 +176,8 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 			if (response.getStatus() != 200) {
 				throw new BadRequestException(response);
 			}
-		} catch(Exception e) {
-			throw new ModelException("Não foi possível atualizar o usuário de ID: " + entity.getId() , e);
+		} catch(NullPointerException | ProcessingException e) {
+			throw new RuntimeException("The was a problem processing your request. ID: " + entity.getId() , e);
 		} finally {
 			if (response != null) response.close();
 		}

@@ -1,5 +1,7 @@
 package br.my.company.keycloak.storage.rest;
 
+import java.util.Set;
+
 import javax.naming.AuthenticationException;
 
 import br.my.company.keycloak.storage.rest.model.Entity;

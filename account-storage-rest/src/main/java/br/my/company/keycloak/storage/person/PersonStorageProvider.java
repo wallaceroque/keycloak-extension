@@ -147,7 +147,7 @@ public class PersonStorageProvider implements
     		throw new ModelException(Messages.INVALID_USER, wrapper);
     		
     	}  catch(ModelException me) {
-    		logger.error("Throw UserStorageProviderException!", me);
+    		logger.error(me.getMessage(), me);
     		throw me;
     	}
     	            
@@ -197,10 +197,19 @@ public class PersonStorageProvider implements
 	@Override
 	public boolean isValid(RealmModel realm, UserModel user, CredentialInput input) {
 		logger.info("PersonStorageProvider.isValid: UserModel.getId() -> " + user.getId());
+		
 		if (!supportsCredentialType(input.getType()) || !(input instanceof UserCredentialModel)) return false;
 //        UserAdapter userAdapter = (UserAdapter)getUserByUsername(StorageId.externalId(user.getId()), realm);
 		Person person = identityStore.searchById(Long.valueOf((StorageId.externalId(user.getId()))));
-
+		
+		if (person == null) return false;
+		
+		if (!person.isEnabled()) {
+			//RuntimeException wrapper = new RuntimeException(Errors.INVALID_USER_CREDENTIALS, new IllegalStateException("User not complete your registration"));
+			throw new ModelException(
+					Messages.USER_NOT_COMPLETE_REGISTRATION);
+		}
+		
         //String password = getPassword(adapter);
 		String password = person.getPassword();
         UserCredentialModel cred = (UserCredentialModel)input;
@@ -214,7 +223,7 @@ public class PersonStorageProvider implements
         return password != null && password.equals(cred.getValue());
 	}
 
-	@Override
+	@Override	
 	public boolean supportsCredentialType(String credentialType) {
 		return getSupportedCredentialTypes().contains(credentialType);
 	}

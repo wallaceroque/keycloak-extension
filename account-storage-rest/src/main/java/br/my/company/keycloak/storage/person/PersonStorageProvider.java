@@ -205,6 +205,7 @@ public class PersonStorageProvider implements
 		if (person == null) return false;
 		
 		if (!person.isEnabled()) {
+			//TODO Possível pontos de problema
 			//RuntimeException wrapper = new RuntimeException(Errors.INVALID_USER_CREDENTIALS, new IllegalStateException("User not complete your registration"));
 			throw new ModelException(
 					Messages.USER_NOT_COMPLETE_REGISTRATION);

@@ -224,12 +224,14 @@ public class Messages {
 
     public static final String INTERNAL_SERVER_ERROR = "internalServerError";
 
-	public static final String USER_STORAGE_PROVIDER_LOGIN_FAILURE = "userStorageProviderLoginFailure";
+    /* Este código foi inserido para teste com mensagens customizadas */
+    public static final String USER_STORAGE_PROVIDER_LOGIN_FAILURE = "userStorageProviderLoginFailure";
 
-	public static final String USER_STORAGE_PROVIDER_UNAVAILABLE = "userStorageProviderUnavailable";
+    public static final String USER_STORAGE_PROVIDER_UNAVAILABLE = "userStorageProviderUnavailable";
+    
+    public static final String USER_STORAGE_PROVIDER_UNEXPECTED_ERROR = "userStorageProviderUnexpectedError";
 
-	public static final String USER_STORAGE_PROVIDER_UNEXPECTED_ERROR = "userStorageProviderUnexpectedError";
-
-	public static final String USER_NOT_COMPLETE_REGISTRATION = "userNotCompleteRegistration";
+    public static final String USER_NOT_COMPLETE_REGISTRATION = "userNotCompleteRegistration";
+    /* Fim da customização */
 
 }

@@ -93,6 +93,8 @@ public class Validation {
             addError(errors, FIELD_USERNAME, Messages.MISSING_USERNAME);
         }
 
+        /* Customização para evitar que os atributos 'First Name' e 'Last Name' sejam validados */
+        
         /*if (isBlank(formData.getFirst(FIELD_FIRST_NAME))) {
             addError(errors, FIELD_FIRST_NAME, Messages.MISSING_FIRST_NAME);
         }
@@ -100,6 +102,8 @@ public class Validation {
         if (isBlank(formData.getFirst(FIELD_LAST_NAME))) {
             addError(errors, FIELD_LAST_NAME, Messages.MISSING_LAST_NAME);
         }*/
+        
+        /* Fim da customização */
 
         if (isBlank(formData.getFirst(FIELD_EMAIL))) {
             addError(errors, FIELD_EMAIL, Messages.MISSING_EMAIL);

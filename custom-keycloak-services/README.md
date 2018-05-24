@@ -4,6 +4,13 @@ This is a project to extend the keycloak services module. Customizing this proje
 
 Obs.: If you have a RedHat's subscription for the RH-SSO, product based on the Keycloak, consult and valid the RedHat for your customizations 
 
+## Class changed for test
+
+- org.keycloak.services.messages.Messages.java
+- org.keycloak.services.resources.account.AccountFormService.java
+- org.keycloak.services.validation.Validation.java
+- org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator.Java
+
 ## Building and deploy this project
 
 In project's root of **custom-keycloak-services**, to build, run:

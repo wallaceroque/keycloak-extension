@@ -31,7 +31,9 @@
     "url": ""
   },
   "nodemonConfig": {
-    "ignore": ["data/*"]
+    "ignore": [
+      "data/*"
+    ]
   },
   "license": "MIT",
   "description": "Projeto para simular a API de serviço para um Pessoa física"

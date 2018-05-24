@@ -110,6 +110,7 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
 
     }
     
+    /* Customização para tratar o erro no fluxo de atualização de credenciais nos casos em que são utilizados um provedor de usuários externo. */
     public Response setUserStorageProviderError(AuthenticationFlowContext context, UserModel user, String error, String message, AuthenticationFlowError flowError) {
 		dummyHash(context);
 		context.getEvent().error(error);
@@ -121,6 +122,7 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
 		return challengeResponse;
     	
     }
+    /* Fim da customização */
 
     public boolean invalidUser(AuthenticationFlowContext context, UserModel user) {
         if (user == null) {
@@ -176,6 +178,7 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
             }
 
             return false;
+        /* Customização para capturar eventuais exceções geradas a partir da consulta de um storage provider externo (user federated provider) */
         } catch (ModelException me) {
         	ServicesLogger.LOGGER.failedAuthentication(me.getCause());
         	logger.info("AbstractUsernameFormAuthenticator: " + me.getCause().getMessage());
@@ -183,7 +186,8 @@ public abstract class AbstractUsernameFormAuthenticator extends AbstractFormAuth
         	
         	return false;
         }
-
+	/* Fim da customização */
+	    
         if (invalidUser(context, user)) {
             return false;
         }

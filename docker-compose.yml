@@ -19,7 +19,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_PORT_5432_TCP_ADDR: postgres
       POSTGRES_PORT_5432_TCP_PORT: 5432
-      SIAC_CONNECTION_URL: http://10.2.103.198:3000/api
+      SI_CONNECTION_URL: http://10.2.103.198:3000/api
     volumes:
       #- ./dtp-themes/target/dtp-themes.zip:/opt/jboss/keycloak/standalone/deployments/dtp-themes.zip
       - ./realms/person.json:/opt/jboss/keycloak/realms/person.json

@@ -39,7 +39,7 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 	public PersonIdentityStore(RESTConfig config) {
         this.config = config;
         
-        logger.info("SIAC_CONNECTION_URL " + config.getConnectionUrl());
+        logger.info("SI_CONNECTION_URL " + config.getConnectionUrl());
         
         Client client = ClientBuilder.newClient();
         this.api = client.target(UriBuilder.fromPath(config.getConnectionUrl()));

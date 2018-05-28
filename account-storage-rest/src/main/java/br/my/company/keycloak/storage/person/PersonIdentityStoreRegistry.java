@@ -53,7 +53,7 @@ public class PersonIdentityStoreRegistry {
      * Create PersonIdentityStore to be cached in the local registry
      */
     public static PersonIdentityStore createRestIdentityStore(RESTConfig config) {
-    	checkSystemProperty("SIAC_CONNECTION_URL", "http://siac/api");
+    	checkSystemProperty("SIAC_CONNECTION_URL", "http://si/api");
 
         return new PersonIdentityStore(config);
     }

@@ -43,8 +43,8 @@ public class PersonStorageProvider implements
 		CredentialInputValidator,
 		CredentialInputUpdater
 		//UserQueryProvider,
-//		CredentialAuthentication,
-//		ImportedUserValidation
+		//CredentialAuthentication,
+		//ImportedUserValidation
         // OnUserCache
 {
     private static final Logger logger = Logger.getLogger(PersonStorageProvider.class);
@@ -54,11 +54,7 @@ public class PersonStorageProvider implements
     protected KeycloakSession session;
     
     protected PersonStorageProviderFactory factory;
-    //protected UserStorageProviderModel model;
     protected PersonIdentityStore identityStore;
-    //protected CidadaoService service;
-    //protected PasswordUpdateCallback updater;
-    //protected LDAPStorageMapperManager mapperManager;
     protected PersonStorageUserManager userManager;
     
     protected final Set<String> supportedCredentialTypes = new HashSet<>();
@@ -69,7 +65,6 @@ public class PersonStorageProvider implements
         this.session = session;
         this.model = model;
         this.identityStore = identityStore;
-        //this.mapperManager = new LDAPStorageMapperManager(this);
         this.userManager = new PersonStorageUserManager(this);
 
         supportedCredentialTypes.add(UserCredentialModel.PASSWORD);
@@ -107,6 +102,7 @@ public class PersonStorageProvider implements
     
     @Override
 	public UserModel getUserByUsername(String id, RealmModel realm) throws ModelException {
+		//////// DEBUG-START
     	logger.info("PersonStorageProvider.getUserByUsername: id: " + id);
 //    	logger.info("PersonStorageProvider.getUserByUsername: count local storage: " + session.userLocalStorage().getUsersCount(realm));
     	logger.info("PersonStorageProvider.getUserByUsername: count federated storage: " + session.userFederatedStorage().getStoredUsersCount(realm));
@@ -127,7 +123,8 @@ public class PersonStorageProvider implements
         		.forEach(requiredAction -> 
         			logger.info("PersonStorageProvider.getUserByUsername: required action from federated storage: " + requiredAction));
             });
-    	
+
+    	//////// DEBUG-END
         ///////////////////////////////////////////////////////////
         Person person = null;
     	try{            

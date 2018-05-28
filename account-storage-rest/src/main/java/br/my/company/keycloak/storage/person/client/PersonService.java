@@ -20,7 +20,7 @@ public interface PersonService {
 	
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	Response getAll(@QueryParam("filter") String filtros);
+	Response getAll(@QueryParam("filter") String filters);
 	
 	@GET
 	@Path("/{id}")
@@ -30,28 +30,28 @@ public interface PersonService {
 	@GET
 	@Path("/count")
 	@Produces({ MediaType.APPLICATION_JSON })
-	Response count(@QueryParam("where") String condicao);
+	Response count(@QueryParam("where") String condition);
 	
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	Response addCidadao(Person person);
+	Response addPerson(Person person);
 	
 	@PUT
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	Response updateCidadao(Person person);
+	Response updatePerson(Person person);
 	
 	@PATCH
 	@Path("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	Response updateParcialCidadao(@PathParam("id") Long id, Person cidadao);
+	Response updateParcialPerson(@PathParam("id") Long id, Person person);
 	
 	@DELETE
 	@Path("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	Response removeCidadao(@PathParam("id") Long id);
+	Response removePerson(@PathParam("id") Long id);
 
 }

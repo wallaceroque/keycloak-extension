@@ -1,8 +1,8 @@
 # Person Service
 
-**person-service** é um projeto em NodeJS para simular a API REST do domínio Person.
+**person-service** is a NodeJS project to simulate a API REST of Person domain.
 
-O [Loopback 3](https://loopback.io/) oferece uma API rica de acordo com o domínio declarado em arquivos JSON:
+The [Loopback 3](https://loopback.io/) offers a rich API to the domain declared in JSON files:
 
 ```json
 {
@@ -35,22 +35,22 @@ O [Loopback 3](https://loopback.io/) oferece uma API rica de acordo com o domín
 }
 ```
 
-A API criada pode ser consultada por meio do Swagger embarcado na aplicação no endereço **http://localhost:3000/explorer**.
+The API can be consulting through a Swagger embedded into application in address  **http://localhost:3000/explorer**.
 
 ![API Person](docs/images/api-person-node.png)
 
-## Iniciando o projeto
+## Starting project
 
 ```bash
-# Instalação dos módulos NodeJS
+# Installation of NodeJS modules
 npm install
 
-# Iniciando projeto
+# Starting project
 npm start
 ```
 
-## Persistência de dados
+## Data persistence
 
-Os dados são persistidos em arquivo: `<raiz_do_projeto>/data/db.json`.
+Data are persisted in file: `<root_of_project>/data/db.json`.
 
-Para persistência em outros bancos de dados vide [documentação do Loopback](http://loopback.io/doc/en/lb3/Defining-data-sources.html)
+To persistence in databases look [Loopback's documentation](http://loopback.io/doc/en/lb3/Defining-data-sources.html)

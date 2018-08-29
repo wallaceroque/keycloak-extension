@@ -7,8 +7,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "start": "nodemon --exec node .",
-    "posttest": "npm run lint && nsp check"
+    "dev": "nodemon --exec node .",
+    "start": "node ."
   },
   "dependencies": {
     "compression": "^1.0.3",

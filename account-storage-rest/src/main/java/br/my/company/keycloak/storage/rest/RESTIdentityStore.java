@@ -1,7 +1,5 @@
 package br.my.company.keycloak.storage.rest;
 
-import java.util.Set;
-
 import javax.naming.AuthenticationException;
 
 import br.my.company.keycloak.storage.rest.model.Entity;
@@ -9,7 +7,7 @@ import br.my.company.keycloak.storage.rest.model.Entity;
 public interface RESTIdentityStore<T extends Entity> {
 	
 	/**
-     * Retorna a configuração da instância do Identity Store baseado em REST
+     * Returns configuration of instance's REST Identity Store
      *
      * @return RESTConfig
      */
@@ -30,14 +28,14 @@ public interface RESTIdentityStore<T extends Entity> {
     T searchByEmail(String email);
 	
 	/**
-     * Persiste uma entidade
+     * Persists an entity
      *
      * @param entity
      */
 	void add(T entity);
 	
 	/**
-     * Atualiza uma entidade
+     * Updates an entity
      *
      * @param entity
      */
@@ -53,7 +51,7 @@ public interface RESTIdentityStore<T extends Entity> {
     // Identity query
 
     /**
-     * Retorna uma lista de entidades a partir de uma consulta
+     * Returns a entities' list from a query
      * 
      * @param restQuery
      * @return 
@@ -61,14 +59,14 @@ public interface RESTIdentityStore<T extends Entity> {
     //List<T> fetchQueryResults(RESTQuery restQuery);
     
     /**
-     * Retorna a quantidade de registros encontrados a partir de uma consulta
+     * Returns a number of records founded from a query
      * @param restQuery
      * @return
      */
     //int countQueryResults(RESTQuery restQuery);
     
     /**
-     * Valida uma credencial específica.
+     * Validate a specific credential.
      *
      * @param entity Usuário Keycloak
      * @param senha Senha do usuário 

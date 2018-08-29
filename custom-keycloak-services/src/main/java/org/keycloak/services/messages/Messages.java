@@ -224,7 +224,7 @@ public class Messages {
 
     public static final String INTERNAL_SERVER_ERROR = "internalServerError";
 
-    /* Este código foi inserido para teste com mensagens customizadas */
+    /* This code was included to test custom messages */
     public static final String USER_STORAGE_PROVIDER_LOGIN_FAILURE = "userStorageProviderLoginFailure";
 
     public static final String USER_STORAGE_PROVIDER_UNAVAILABLE = "userStorageProviderUnavailable";
@@ -232,6 +232,6 @@ public class Messages {
     public static final String USER_STORAGE_PROVIDER_UNEXPECTED_ERROR = "userStorageProviderUnexpectedError";
 
     public static final String USER_NOT_COMPLETE_REGISTRATION = "userNotCompleteRegistration";
-    /* Fim da customização */
+    /* End of custom */
 
 }

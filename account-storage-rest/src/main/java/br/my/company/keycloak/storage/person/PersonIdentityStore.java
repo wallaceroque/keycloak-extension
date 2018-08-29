@@ -26,6 +26,7 @@ import org.keycloak.services.messages.Messages;
 import br.my.company.keycloak.storage.person.model.Person;
 import br.my.company.keycloak.storage.rest.RESTConfig;
 import br.my.company.keycloak.storage.rest.RESTIdentityStore;
+import br.my.company.keycloak.storage.rest.RESTIdentityStoreException;
 import br.my.company.keycloak.storage.rest.model.ErrorResponse;
 
 // TODO: Refactor treatment exception.
@@ -67,7 +68,8 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 		} catch (NullPointerException | BadRequestException | ProcessingException e) {
 			logger.error("We were unable to process your request.", e);
 			RuntimeException wrapper = new RuntimeException(Errors.INVALID_REQUEST, e);
-			throw new ModelException(Messages.COULD_NOT_PROCEED_WITH_AUTHENTICATION_REQUEST, wrapper);
+			
+			throw new RESTIdentityStoreException(Messages.COULD_NOT_PROCEED_WITH_AUTHENTICATION_REQUEST, wrapper);
 			
 		} catch (NotFoundException nfe) {
 			logger.warn("Person not found. ID: " + id, nfe);
@@ -77,17 +79,17 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 			logger.error("The user storage provider was unable to process request. Status code: " + response.getStatus(), cee);
 			ErrorResponse error = response.readEntity(ErrorResponse.class);
 			RuntimeException wrapper = new RuntimeException(error.getMessage(), cee);
-			throw new ModelException(Messages.USER_STORAGE_PROVIDER_LOGIN_FAILURE, wrapper);
+			throw new RESTIdentityStoreException("userStorageProviderLoginFailure", wrapper);
 			
 		} catch (ServiceUnavailableException sue) {
 			logger.error("The servers are unavailable: " + sue.getMessage(), sue);
 			RuntimeException wrapper = new RuntimeException(Errors.IDENTITY_PROVIDER_ERROR, sue);
-			throw new ModelException(Messages.USER_STORAGE_PROVIDER_UNAVAILABLE, wrapper);
+			throw new RESTIdentityStoreException("userStorageProviderUnavailable", wrapper);
 		
 		} catch (ServerErrorException see) {
 			logger.error("I'm sorry, an unexpected error occurred. We are working to resolve it.", see);
 			RuntimeException wrapper = new RuntimeException(Errors.IDENTITY_PROVIDER_ERROR, see);
-			throw new ModelException(Messages.USER_STORAGE_PROVIDER_UNEXPECTED_ERROR, wrapper);
+			throw new RESTIdentityStoreException("userStorageProviderUnexpectedError", wrapper);
 			
 		} finally {
 			if (response != null) response.close();
@@ -124,7 +126,7 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 		} catch (NullPointerException | BadRequestException | ProcessingException e) {
 			logger.error("We were unable to process your request.", e);
 			RuntimeException wrapper = new RuntimeException(Errors.INVALID_REQUEST, e);
-			throw new ModelException(Messages.COULD_NOT_PROCEED_WITH_AUTHENTICATION_REQUEST, wrapper);
+			throw new RESTIdentityStoreException(Messages.COULD_NOT_PROCEED_WITH_AUTHENTICATION_REQUEST, wrapper);
 			
 		} catch (NotFoundException nfe) {
 			logger.warn("person not found by e-mail informed: " + email, nfe);
@@ -134,17 +136,17 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 			logger.error("The user storage provider was unable to process request. Status code: " + response.getStatus(), cee);
 			ErrorResponse error = response.readEntity(ErrorResponse.class);
 			RuntimeException wrapper = new RuntimeException(error.getMessage(), cee);
-			throw new ModelException(Messages.USER_STORAGE_PROVIDER_LOGIN_FAILURE, wrapper);
+			throw new RESTIdentityStoreException("userStorageProviderLoginFailure", wrapper);
 			
 		} catch (ServiceUnavailableException sue) {
 			logger.error("The servers are unavailable: " + sue.getMessage(), sue);
 			RuntimeException wrapper = new RuntimeException(Errors.IDENTITY_PROVIDER_ERROR, sue);
-			throw new ModelException(Messages.USER_STORAGE_PROVIDER_UNAVAILABLE, wrapper);
+			throw new RESTIdentityStoreException("userStorageProviderUnavailable", wrapper);
 		
 		} catch (ServerErrorException see) {
 			logger.error("I'm sorry, an unexpected error occurred. We are working to resolve it.", see);
 			RuntimeException wrapper = new RuntimeException(Errors.IDENTITY_PROVIDER_ERROR, see);
-			throw new ModelException(Messages.USER_STORAGE_PROVIDER_UNEXPECTED_ERROR, wrapper);
+			throw new RESTIdentityStoreException("userStorageProviderUnexpectedError", wrapper);
 			
 		} finally {
 			if (response != null) response.close();

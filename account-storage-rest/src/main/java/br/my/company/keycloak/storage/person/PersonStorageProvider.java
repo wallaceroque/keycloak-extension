@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.ws.rs.NotFoundException;
-
 import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
@@ -32,6 +30,7 @@ import org.keycloak.storage.user.UserLookupProvider;
 
 import br.my.company.keycloak.storage.person.model.Person;
 import br.my.company.keycloak.storage.person.model.UserAdapter;
+import br.my.company.keycloak.storage.rest.RESTIdentityStoreException;
 
 /**
  * @author <a href="mailto:wallacerock@gmail.com">Wallace Roque</a>
@@ -134,8 +133,7 @@ public class PersonStorageProvider implements
     		
     		if (!person.isEnabled()) {
     			RuntimeException wrapper = new RuntimeException(Errors.INVALID_USER_CREDENTIALS, new IllegalStateException("User not complete your registration"));
-    			throw new ModelException(
-    					Messages.USER_NOT_COMPLETE_REGISTRATION, wrapper);
+    			throw new ModelException("userNotCompleteRegistration", wrapper);
     		}
     		
     	} catch(NumberFormatException nfe) {
@@ -143,9 +141,9 @@ public class PersonStorageProvider implements
     		RuntimeException wrapper = new RuntimeException(Errors.INVALID_FORM, nfe);
     		throw new ModelException(Messages.INVALID_USER, wrapper);
     		
-    	}  catch(ModelException me) {
-    		logger.error(me.getMessage(), me);
-    		throw me;
+    	}  catch(RESTIdentityStoreException ris) {
+    		logger.error(ris.getMessage(), ris);
+    		throw new ModelException(ris);
     	}
     	            
         UserAdapter userAdapter = new UserAdapter(session, realm, model, this.identityStore, person);
@@ -174,9 +172,9 @@ public class PersonStorageProvider implements
     		
     		if (person == null) return null;
     		
-    	} catch(ModelException me) {
-    		logger.error("Throw UserStorageProviderException!", me);
-    		throw me;
+    	} catch(RESTIdentityStoreException ris) {
+    		logger.error("Throw UserStorageProviderException!", ris);
+    		throw new ModelException(ris);
     	}
          
         UserAdapter adapter = new UserAdapter(session, realm, model, this.identityStore, person);
@@ -204,8 +202,7 @@ public class PersonStorageProvider implements
 		if (!person.isEnabled()) {
 			//TODO Possível pontos de problema
 			//RuntimeException wrapper = new RuntimeException(Errors.INVALID_USER_CREDENTIALS, new IllegalStateException("User not complete your registration"));
-			throw new ModelException(
-					Messages.USER_NOT_COMPLETE_REGISTRATION);
+			throw new ModelException("userNotCompleteRegistration");
 		}
 		
         //String password = getPassword(adapter);
@@ -265,9 +262,9 @@ public class PersonStorageProvider implements
 	        }
 	        logger.info("updateCredential: Change password with success!");
 	        return true;
-	    } catch (ModelException me) {
-	    	logger.info("updateCredential: Change password failed ", me);
-	    	throw me;
+	    } catch (RESTIdentityStoreException ris) {
+	    	logger.info("updateCredential: Change password failed ", ris);
+	    	throw new ModelException(ris);
 	    }
 	}
 	

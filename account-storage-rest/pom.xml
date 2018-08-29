@@ -80,20 +80,6 @@
 	        <artifactId>resteasy-client</artifactId>
 	        <scope>provided</scope>
 	    </dependency>
-	    <dependency>
-		   <groupId>javax.enterprise</groupId>
-		   <artifactId>cdi-api</artifactId>
-		   <!-- Use version 2.0 for Weld 3 -->
-		   <version>1.2</version>
-		   <scope>provided</scope>
-		</dependency>
-	    
-	    <dependency>
-            <groupId>org.jboss.spec.javax.ejb</groupId>
-            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
-            <version>1.0.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <build>

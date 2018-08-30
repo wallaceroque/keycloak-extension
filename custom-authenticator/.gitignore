@@ -1,0 +1,12 @@
+.tmp
+environments/production/modules
+*.jar
+*.class
+*.war
+*.ear
+.settings/
+.classpath
+.project
+.directory
+target/
+/bin/

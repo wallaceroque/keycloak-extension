@@ -35,7 +35,7 @@ services:
       - database-nw
 
   person-service:
-    image: person-service:1.0.0
+    image: local/person-service:1.0.0
     build:
       context: ./person-service/.
     container_name: person-service

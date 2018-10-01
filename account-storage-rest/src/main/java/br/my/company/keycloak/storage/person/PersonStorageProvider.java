@@ -142,8 +142,8 @@ public class PersonStorageProvider implements
     		throw new ModelException(Messages.INVALID_USER, wrapper);
     		
     	}  catch(RESTIdentityStoreException ris) {
-    		logger.error(ris.getMessage(), ris);
-    		throw new ModelException(ris);
+    		logger.error(ris.getCause());
+    		throw new ModelException(ris.getMessage(), ris.getCause());
     	}
     	            
         UserAdapter userAdapter = new UserAdapter(session, realm, model, this.identityStore, person);
@@ -173,8 +173,8 @@ public class PersonStorageProvider implements
     		if (person == null) return null;
     		
     	} catch(RESTIdentityStoreException ris) {
-    		logger.error("Throw UserStorageProviderException!", ris);
-    		throw new ModelException(ris);
+    		logger.error("Throw ModelException!", ris);
+    		throw new ModelException(ris.getMessage(), ris.getCause());
     	}
          
         UserAdapter adapter = new UserAdapter(session, realm, model, this.identityStore, person);
@@ -202,7 +202,9 @@ public class PersonStorageProvider implements
 		if (!person.isEnabled()) {
 			//TODO Possível pontos de problema
 			//RuntimeException wrapper = new RuntimeException(Errors.INVALID_USER_CREDENTIALS, new IllegalStateException("User not complete your registration"));
-			throw new ModelException("userNotCompleteRegistration");
+			IllegalStateException illegalStateException = new IllegalStateException(
+					"User did not complete registration");
+			throw new ModelException("userDidNotCompleteRegistration", illegalStateException);
 		}
 		
         //String password = getPassword(adapter);
@@ -264,7 +266,7 @@ public class PersonStorageProvider implements
 	        return true;
 	    } catch (RESTIdentityStoreException ris) {
 	    	logger.info("updateCredential: Change password failed ", ris);
-	    	throw new ModelException(ris);
+	    	throw new ModelException(ris.getMessage(), ris.getCause());
 	    }
 	}
 	

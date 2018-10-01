@@ -20,7 +20,6 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.jboss.logging.Logger;
 import org.keycloak.events.Errors;
-import org.keycloak.models.ModelException;
 import org.keycloak.services.messages.Messages;
 
 import br.my.company.keycloak.storage.person.model.Person;
@@ -29,7 +28,6 @@ import br.my.company.keycloak.storage.rest.RESTIdentityStore;
 import br.my.company.keycloak.storage.rest.RESTIdentityStoreException;
 import br.my.company.keycloak.storage.rest.model.ErrorResponse;
 
-// TODO: Refactor treatment exception.
 public class PersonIdentityStore implements RESTIdentityStore<Person> {
 	
 	private static final Logger logger = Logger.getLogger(PersonIdentityStore.class);
@@ -60,16 +58,16 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 			response = this.api.path("persons/{id}")
 					.resolveTemplate("id", id.toString())
 					.request(MediaType.APPLICATION_JSON)
-					.get();			
+					.get();		
+	
 			response.bufferEntity();
 			
 			person = response.readEntity(Person.class);
 		
-		} catch (NullPointerException | BadRequestException | ProcessingException e) {
+		} catch (NullPointerException | ProcessingException e) {
 			logger.error("We were unable to process your request.", e);
 			RuntimeException wrapper = new RuntimeException(Errors.INVALID_REQUEST, e);
-			
-			throw new RESTIdentityStoreException(Messages.COULD_NOT_PROCEED_WITH_AUTHENTICATION_REQUEST, wrapper);
+			throw new RESTIdentityStoreException(Messages.UNEXPECTED_ERROR_HANDLING_REQUEST, wrapper);
 			
 		} catch (NotFoundException nfe) {
 			logger.warn("Person not found. ID: " + id, nfe);
@@ -77,9 +75,10 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 			
 		} catch (ClientErrorException cee) {
 			logger.error("The user storage provider was unable to process request. Status code: " + response.getStatus(), cee);
-			ErrorResponse error = response.readEntity(ErrorResponse.class);
-			RuntimeException wrapper = new RuntimeException(error.getMessage(), cee);
-			throw new RESTIdentityStoreException("userStorageProviderLoginFailure", wrapper);
+			ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+			String message = (errorResponse != null && errorResponse.getMessage().equals("")) ? errorResponse.getMessage() : "userStorageProviderLoginFailure";
+			RuntimeException wrapper = new RuntimeException(Errors.INVALID_REQUEST, cee);
+			throw new RESTIdentityStoreException(message, wrapper);
 			
 		} catch (ServiceUnavailableException sue) {
 			logger.error("The servers are unavailable: " + sue.getMessage(), sue);
@@ -119,8 +118,6 @@ public class PersonIdentityStore implements RESTIdentityStore<Person> {
 			
 			if(persons.size() > 1) {
 				logger.warn("Multiples users with the same email.");
-				// RuntimeException wrapper = new RuntimeException(Errors.EMAIL_IN_USE);
-				// throw new ModelException(Messages.EMAIL_EXISTS, wrapper);
 			}
 			
 		} catch (NullPointerException | BadRequestException | ProcessingException e) {

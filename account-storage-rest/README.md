@@ -7,6 +7,6 @@ Projeto para criar um user storage via REST.
 Na raiz do projeto **account-storage-rest**, executar:
 
 ```bash
-mvn clean wildfly-deploy
+mvn clean wildfly:deploy
 ```
 

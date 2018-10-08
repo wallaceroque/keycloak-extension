@@ -15,7 +15,7 @@ O objetivo é customizar o Keycloak utilizando as SPI (Service Provider Interfac
 
 ## Estrutura do repositório
 
-- **cidadao-service** - Simples serviço de contas do usuário para integração com o Keycloak
+- **person-service** - Simples serviço de contas do usuário para integração com o Keycloak
 - **dtp-themes** - Projeto para customização do tema do Keycloak
 - **user-storage-rest** - Projeto para extensão e integração com a base de usuários do Keycloak utilizando REST
 

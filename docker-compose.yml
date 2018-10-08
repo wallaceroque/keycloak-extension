@@ -3,11 +3,11 @@ version: "3.5"
 services:
 
   keycloak:
-    image: keycloak:3.4.4.Snapshot
+    image: local/keycloak-ha-postgres:3.4.4.Final
     build:
       context: .
     container_name: keycloak-server
-    command: ["-b", "0.0.0.0","-bmanagement","0.0.0.0","-Dkeycloak.import=/opt/jboss/keycloak/realms/person.json"]
+    command: ["-b", "0.0.0.0","-bmanagement","0.0.0.0", "--server-config", "standalone-ha.xml", "-Dkeycloak.import=/opt/jboss/keycloak/realms/person.json"]
     environment:
       JBOSS_USER: jboss
       JBOSS_PASSWORD: jboss00#
@@ -27,9 +27,8 @@ services:
       - "8080:8080"
       - "9990:9990"
     depends_on:
-      - person-service
       - postgres
-
+      #- person-service
     networks:
       - backend-nw
       - database-nw

@@ -4,7 +4,7 @@ FROM alpine:3.5 AS base
 # install node
 RUN apk add --no-cache nodejs-current tini
 # set working directory
-WORKDIR /root/service
+WORKDIR /service
 # Set tini as entrypoint
 ENTRYPOINT ["/sbin/tini", "--"]
 # copy project file
@@ -32,9 +32,11 @@ RUN npm install
 # ---- Release ----
 FROM base AS release
 # copy production node_modules
-COPY --from=dependencies /root/service/prod_node_modules ./node_modules
+COPY --from=dependencies /service/prod_node_modules ./node_modules
 # copy app sources
 COPY . .
+# expose volume to data
+VOLUME "/service/data"
 # expose port and define CMD
 EXPOSE 3000
 CMD npm run start

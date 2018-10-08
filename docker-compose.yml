@@ -34,12 +34,14 @@ services:
       - database-nw
 
   person-service:
-    image: local/person-service:1.0.0
+    image: local/person-service:0.0.1
     build:
       context: ./person-service/.
     container_name: person-service
     ports:
       - "3000:3000"
+    #volumes:
+      #- file-db:/service/data
     networks:
       - backend-nw
 
@@ -62,3 +64,4 @@ networks:
 
 volumes:
   keycloack-db:
+  #file-db:

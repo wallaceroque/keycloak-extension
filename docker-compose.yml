@@ -21,7 +21,7 @@ services:
       POSTGRES_PORT_5432_TCP_PORT: 5432
       SI_CONNECTION_URL: http://person-service:3000/api
     volumes:
-      - ./realms/person.json:/opt/jboss/keycloak/realms/person.json
+      - ./realms/person-v0.0.1.json:/opt/jboss/keycloak/realms/person.json
       - ./:/opt/jboss/workspace
     ports:
       - "8080:8080"
@@ -34,7 +34,7 @@ services:
       - database-nw
 
   person-service:
-    image: local/person-service:0.0.1
+    image: wallaceroque/person-service:0.0.1
     build:
       context: ./person-service/.
     container_name: person-service

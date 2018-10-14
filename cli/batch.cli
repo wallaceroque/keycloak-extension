@@ -1,0 +1,5 @@
+embed-server --server-config=standalone-ha.xml --std-out=echo
+run-batch --file=cli/deploy-account-storage-rest.cli
+run-batch --file=cli/deploy-custom-authenticator.cli
+run-batch --file=cli/deploy-custom-themes.cli
+stop-embedded-server

@@ -133,7 +133,7 @@ public class PersonStorageProvider implements
     		
     		if (!person.isEnabled()) {
     			RuntimeException wrapper = new RuntimeException(Errors.INVALID_USER_CREDENTIALS, new IllegalStateException("User not complete your registration"));
-    			throw new ModelException("userNotCompleteRegistration", wrapper);
+    			throw new ModelException("userDidNotCompleteRegistration", wrapper);
     		}
     		
     	} catch(NumberFormatException nfe) {

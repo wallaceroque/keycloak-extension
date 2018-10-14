@@ -1,3 +1,3 @@
-embed-server --server-config=standalone-ha.xml --std-out=echo
-deploy /opt/jboss/custom-authenticator/custom-authenticator.jar
-stop-embedded-server
+/deployment=custom-authenticator.jar:add(content=[{input-stream-index=/opt/jboss/custom-authenticator/custom-authenticator.jar}],enabled=false)
+/deployment=custom-authenticator.jar:explode
+/deployment=custom-authenticator.jar:deploy

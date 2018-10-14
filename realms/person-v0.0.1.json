@@ -61,6 +61,8 @@
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
   "smtpServer": {},
+  "loginTheme": "custom",
+  "accountTheme": "custom",
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
@@ -231,22 +233,10 @@
   },
   "internationalizationEnabled": true,
   "supportedLocales": [
-    "de",
-    "no",
-    "ru",
-    "sv",
     "pt-BR",
-    "lt",
-    "en",
-    "it",
-    "fr",
-    "zh-CN",
-    "es",
-    "ja",
-    "ca",
-    "nl"
+    "en"
   ],
-  "defaultLocale": "pt-BR",
+  "defaultLocale": "en",
   "authenticationFlows": [
     {
       "id": "4c71459c-00b1-46de-b15a-13eb39df021c",

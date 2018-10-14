@@ -1,0 +1,2 @@
+module add --name=br.my.company.keycloak.custom-themes --resources=/opt/jboss/custom-themes/custom-themes.jar
+/subsystem=keycloak-server/theme=defaults:list-add(name=modules,value="br.my.company.keycloak.custom-themes")

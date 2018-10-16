@@ -3,5 +3,14 @@
     "name": "db",
     "connector": "memory",
     "file": "./data/db.json"
+  },
+  "mongo": {
+    "name": "mongo",
+    "connector": "mongodb",
+    "host": "localhost",
+    "port": 27017,
+    "user": "person",
+    "password": "personDB",
+    "database": "person"
   }
 }

@@ -1,14 +1,14 @@
 {
   "name": "Person",
   "plural": "persons",
-  "forceId": false,
   "remoting" : {
     "normalizeHttpPath" : true
   },
+  "idInjection": false,
+  "forceId": false,
   "properties": {
     "id": {
       "type": "number",
-      "required": true,
       "id": true
     },
     "password": {
@@ -19,16 +19,22 @@
       "type": "string"
     },
     "email": {
-      "type": "string"
+      "type": "string",
+      "index": {
+        "unique": true
+      },
+      "required": true
      },
     "telephone": {
       "type": "string"
     },
     "isEnabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": true
     },
     "isMustChangePassword": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": true
     }
   }
 }

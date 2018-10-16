@@ -3,7 +3,7 @@ version: "3.5"
 services:
 
   keycloak:
-    image: local/keycloak-ha-postgres:3.4.4.Final
+    image: wallaceroque/keycloak-ha-postgres:3.4.4.Final
     build:
       context: .
     container_name: keycloak-server
@@ -38,12 +38,24 @@ services:
     build:
       context: ./person-service/.
     container_name: person-service
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_HOST=mongo
+      - DB_PORT=27017
+      - DB_USER=person
+      - DB=person
+      - DB_PASSWORD=personDB
+      - INITIALIZE_DB=true
     ports:
       - "3000:3000"
+    depends_on:
+      - mongo
     #volumes:
       #- file-db:/service/data
     networks:
       - backend-nw
+      - database-nw
 
   postgres:
     image: postgres:9.4.5
@@ -58,10 +70,42 @@ services:
         aliases:
           - postgres
     
+  mongo:
+    image: bitnami/mongodb:3
+    container_name: person-db
+    environment:
+      - MONGODB_ROOT_PASSWORD=adminDB
+      - MONGODB_USERNAME=person
+      - MONGODB_PASSWORD=personDB
+      - MONGODB_DATABASE=person
+    ports:
+      - 27017:27017
+    networks:
+      - database-nw
+    volumes:
+      - mongo-db:/bitnami
+  
+  mongo-admin:
+    image: mongo-express
+    container_name: 'admin-mongo'
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=Person00!
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=adminDB
+    depends_on:
+      - mongo
+    networks:
+      - backend-nw
+      - database-nw
+
 networks: 
   database-nw:
   backend-nw:
 
 volumes:
   keycloack-db:
-  #file-db:
+  mongo-db:

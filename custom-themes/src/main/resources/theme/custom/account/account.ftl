@@ -28,11 +28,11 @@
 
         <div class="form-group ${messagesPerField.printIfExists('firstName','has-error')}">
             <div class="col-sm-2 col-md-2">
-                <label for="firstName" class="control-label">${msg("fullName")}</label> <span class="required">*</span>
+                <label for="firstName" class="control-label">${msg("fullName")}</label> <!--span class="required">*</span-->
             </div>
 
             <div class="col-sm-10 col-md-10">
-                <input type="text" class="form-control" id="firstName" name="firstName" value="${(account.firstName!'')}" disabled/>
+                <input type="text" class="form-control" id="firstName" name="firstName" value="${(account.firstName!'')}" readonly="readonly" />
             </div>
         </div>
         
@@ -56,18 +56,16 @@
             </div>
         </div>
 
-
-		<!--
-        <div class="form-group ${messagesPerField.printIfExists('lastName','has-error')}">
+        <div class="form-group ${messagesPerField.printIfExists('lastName','has-error')} hidden">
             <div class="col-sm-2 col-md-2">
-                <label for="lastName" class="control-label">${msg("lastName")}</label> <span class="required">*</span>
+                <label for="lastName" class="control-label">${msg("fullName")}</label> 
+                <!--span class="required">*</span-->
             </div>
 
             <div class="col-sm-10 col-md-10">
-                <input type="text" class="form-control" id="lastName" name="lastName" value="${(account.lastName!'')}"/>
+                <input type="text" class="form-control" id="lastName" name="lastName" value="${(account.lastName!'')}" readonly="readonly"/>
             </div>
         </div>
-        -->
 
         <div class="form-group">
             <div id="kc-form-buttons" class="col-md-offset-2 col-md-10 submit">

@@ -1,9 +1,9 @@
 {
   "name": "person-service",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "server/server.js",
   "engines": {
-    "node": ">=4"
+    "node": ">=8"
   },
   "scripts": {
     "lint": "eslint .",
@@ -17,6 +17,7 @@
     "loopback": "^3.22.2",
     "loopback-boot": "^3.1.1",
     "loopback-component-explorer": "^5.0.0",
+    "loopback-connector-mongodb": "^3.8.0",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^2.0.0"
   },

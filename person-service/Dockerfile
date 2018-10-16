@@ -1,8 +1,8 @@
 #
 # ---- Base Node ----
-FROM alpine:3.5 AS base
+FROM alpine:3.8 AS base
 # install node
-RUN apk add --no-cache nodejs-current tini
+RUN apk add --no-cache --update nodejs nodejs-npm tini
 # set working directory
 WORKDIR /service
 # Set tini as entrypoint
